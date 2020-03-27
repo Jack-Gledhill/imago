@@ -11,6 +11,7 @@ Here's what you can expect from Imago once you install it on your machine and ge
 - efficient file upload and storage
 - admin options for user and upload control
 - secure token authorization
+- optional Discord webhook logging
 
 ## Installation
 
