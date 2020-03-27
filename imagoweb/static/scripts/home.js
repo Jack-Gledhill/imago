@@ -121,6 +121,8 @@ function reset_token(id) {
 };
 
 function edit_user(id) {
+    if ($("#edit-button").hasClass("blocked")) return;
+
     swal({
         title: "Hold up!",
         text: "Are you sure you want to do this?",
