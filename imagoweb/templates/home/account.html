@@ -28,6 +28,10 @@
             {% endif %}
         </div>
         
-        <button type="submit" class="submit-button blue-button" onclick="edit_user('{{ user.user_id }}')">Save Changes</button>
+        {% if not superuser %}
+            <button type="submit" class="submit-button blue-button" onclick="edit_user('{{ user.user_id }}')">Save Changes</button>
+        {% else %}
+            <button type="submit" class="submit-button blue-button blocked" onclick="edit_user('{{ user.user_id }}')">Save Changes</button>
+        {% endif %}
     </div>
 {% endblock %}

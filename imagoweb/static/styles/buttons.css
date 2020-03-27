@@ -9,7 +9,7 @@
     transition: .17s ease-in-out;
     cursor: pointer;
 }
-.button.blocked {
+.blocked {
     cursor: not-allowed !important;
 }
 
