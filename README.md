@@ -1,6 +1,6 @@
 # Imago - An MSG Image Server
 
-Imago is the webserver that the MSG Staff use to serve content at [https://cdn.mila-software.group](our CDN). The server was designed to allow ShareX users to easily and securely upload their screenshots to a fast, well-designed and efficient server.
+Imago is the webserver that the MSG Staff use to serve content at https://cdn.mila-software.group. The server was designed to allow ShareX users to easily and securely upload their screenshots to a fast, well-designed and efficient server.
 
 ## Features
 
