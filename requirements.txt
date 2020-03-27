@@ -1,8 +1,10 @@
 attrdict
 flask
+gevent
 honeybadger
 pillow
 Psycopg2
 pyfiglet
 PyYAML
+requests
 termcolor

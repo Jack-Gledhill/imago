@@ -41,7 +41,7 @@ from imagoweb.util.blueprints import upload, user
 # Check for missing dependencies
 # ==============================
 try:
-    import attrdict, psycopg2, yaml
+    import attrdict, psycopg2, requests, yaml
 
     from flask import Flask
     from honeybadger.contrib import FlaskHoneybadger

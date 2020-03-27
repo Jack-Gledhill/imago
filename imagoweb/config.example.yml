@@ -32,7 +32,7 @@ figlet:
 
 version:
     major: 1
-    minor: 0
+    minor: 1
     patch: 0
     release: stable
 
@@ -49,6 +49,29 @@ superuser:
 # =================
 # External services
 # =================
+discord:
+    enabled: true
+    
+    webhooks:
+        - url: https://discordapp.com/api/webhooks/channel/token
+          username: Imago Dashboard
+          events:
+            - IMAGE_DELETE # image deleted by its owner
+            - IMAGE_UPLOAD # image uploaded
+            - USER_EDIT # user has edited their account
+            - USER_TOKEN_RESET # user has reset their token
+
+        - url: https://discordapp.com/api/webhooks/channel/token
+          username: Imago Admin Dashboard
+          events:
+            - FORCE_USER_CREATE # admin created a user
+            - FORCE_USER_EDIT # admin edited a user by force
+            - FORCE_USER_DELETE # admin deleted a user by force
+            - FORCE_USER_TOKEN_RESET # admin reset a user's token by force
+            - FORCE_IMAGE_DELETE # admin deleted an image by force
+            - ADMIN_TOGGLE_ON # superuser made a user admin
+            - ADMIN_TOGGLE_OFF # superuser removed admin from a user
+
 postgres:
     user: user
     password: youshallnotpass

@@ -13,6 +13,7 @@ from typing import Union, Optional, Iterable, Any, Callable, List
 # ------------------------
 # Third-party dependencies
 # ------------------------
+from requests import post
 from PIL import Image
 
 # =========================
@@ -20,6 +21,23 @@ from PIL import Image
 # =========================
 from imagoweb.util.blueprints import user
 from imagoweb.util.constants import cache, config, const, pool
+
+DISCORD_LOG_FORMATS = {
+    "IMAGE_DELETE": ":wastebasket: {user} deleted the image:\n{url}",
+    "IMAGE_UPLOAD": ":inbox_tray: {user} uploaded the image:\n{url}",
+
+    "USER_EDIT": ":pencil: {user} edited their account.",
+    "USER_TOKEN_RESET": ":closed_lock_with_key: {user} reset their account token.",
+
+    "FORCE_USER_CREATE": ":inbox_tray: {admin} created an account with the name {user}.",
+    "FORCE_USER_EDIT": ":pencil: {user} was edited by {admin}.",
+    "FORCE_USER_DELETE": ":wastebasket: {user} was deleted by {admin}.",
+    "FORCE_USER_TOKEN_RESET": ":closed_lock_with_key: {user} had their token reset by {admin}.",
+    "FORCE_IMAGE_DELETE": ":wastebasket: {admin} deleted an image by {user}:\n{url}",
+
+    "ADMIN_TOGGLE_ON": ":lock: {admin} made {user} an Administrator.",
+    "ADMIN_TOGGLE_OFF": ":unlock: {admin} removed Administrator from {user}."
+}
 
 def get_user(token_or_id: Union[str, int]) -> Union[user, None]:
     """Retrieves a user with a given API token or user ID.
@@ -127,3 +145,36 @@ def optimise_image(file: Any,
     saved_image.save(fp=path,
                      optimize=config.file_optimisation.compress,
                      quality=config.file_optimisation.quality)
+
+def make_discord_log(event: str,
+                     **event_values: dict):
+    """This sends a specific event log to Discord with the provided values.
+    
+    If Discord returns a 401, we internally disable Discord logging and warn the user that the token is invalid."""
+
+    if config.discord.enabled:
+        fmt = DISCORD_LOG_FORMATS.get(event)
+
+        if fmt is None:
+            return
+
+        message = fmt.format(**event_values)
+        webhook = first(iterable=config.discord.webhooks,
+                        condition=lambda hookconfig: event in hookconfig.events)
+
+        if webhook is None:
+            return
+
+        response = post(url=webhook.url,
+                        json={
+                            "content": message,
+                            "username": webhook.username
+                        })
+
+        # ==========================================================
+        # Remove from config internally because the URL is incorrect
+        # ==========================================================
+        if response.status_code == 401:
+            config.discord.webhooks.remove(webhook)
+
+        return response

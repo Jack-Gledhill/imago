@@ -17,7 +17,7 @@ from flask import abort, make_response, render_template, request, redirect, json
 # Import local libraries
 # ======================
 from imagoweb.util.constants import app, cache, config, const, epoch, pool
-from imagoweb.util.utilities import allowed_file, check_user, first, generate_discrim, generate_token, get_user, optimise_image
+from imagoweb.util.utilities import allowed_file, check_user, first, generate_discrim, generate_token, get_user, make_discord_log, optimise_image
 from imagoweb.util.blueprints import upload, user
 
 BASE = "/api"
@@ -160,7 +160,13 @@ def upload_file():
                                       created_at=datetime.utcnow(),
                                       owner=user))
 
-    return f"https://{request.url_root.lstrip('http://')}{discriminator}", 200
+    url = f"https://{request.url_root.lstrip('http://')}{discriminator}"
+
+    make_discord_log(event="IMAGE_UPLOAD",
+                     user=user.display_name,
+                     url=url)
+
+    return url, 200
 
 @app.route(rule=BASE + "/delete/<filename>",
            methods=["DELETE", "POST"])
@@ -190,7 +196,7 @@ def delete_file(filename: str):
     # - Both admin but user is not superuser
     # =========================================================
     if (not user.is_admin and user.user_id != image.owner_id) \
-       or (user.is_admin and image.owner.is_admin and user.user_id != const.superuser.user_id):
+       or (user.is_admin and image.owner.is_admin and user.user_id != image.owner_id and user.user_id != const.superuser.user_id):
         return jsonify(dict(code=403,
                             message="You do not own this file.")), 403
 
@@ -204,6 +210,16 @@ def delete_file(filename: str):
                     dict(discrim=filename))
 
     cache.images.remove(image)
+
+    event = "IMAGE_DELETE"
+
+    if user.user_id != image.owner_id:
+        event = "FORCE_IMAGE_DELETE"
+
+    make_discord_log(event=event,
+                     user=image.owner.display_name,
+                     admin=user.display_name,
+                     url=f"https://{request.url_root.lstrip('http://')}{filename}")
 
     return jsonify(dict(code=200,
                         message="Image was deleted.")), 200
@@ -288,6 +304,10 @@ def new_user():
         cache.users.append(user(id=user_id,
                                 **stripped_values))
 
+    make_discord_log(event="FORCE_USER_CREATE",
+                     user=stripped_values.get("display_name"),
+                     admin=perp.display_name)
+
     return jsonify(dict(code=200,
                         message="User was successfully created.",
                         user_id=user_id)), 200
@@ -334,7 +354,11 @@ def delete_user():
                     dict(user_id=victim.user_id))
 
         cache.users.remove(victim)
-                                        
+
+    make_discord_log(event="FORCE_USER_DELETE",
+                     user=victim.display_name,
+                     admin=user.display_name)
+
     return jsonify(dict(code=200,
                         message="User successfully deleted.")), 200
 
@@ -389,6 +413,8 @@ def edit_user():
             return jsonify(dict(code=409,
                                 message="Username is already taken.")), 409
 
+    toggled_to = None
+
     if "admin" in new_stuff:
         # ====================================================
         # User isn't superuser and trying to set user to admin
@@ -398,7 +424,7 @@ def edit_user():
                                 message="Unauthorised to set admin status.")), 403
 
         if new_stuff.get("admin") == "toggle":
-            new_stuff["admin"] = not victim.is_admin
+            toggled_to = new_stuff["admin"] = not victim.is_admin
 
     new_values = dict(username=victim.username,
                       password=victim.password,
@@ -424,7 +450,25 @@ def edit_user():
         cache.users[cache.users.index(victim)] = user(id=victim.user_id,
                                                       created_at=victim.created_at,
                                                       **new_values)
-                                        
+
+    event = "USER_EDIT"
+    if perp.user_id != victim.user_id:
+        event = "FORCE_USER_EDIT"
+
+    if toggled_to is not None:
+        event = "ADMIN_TOGGLE_OFF"
+
+        if toggled_to is True:
+            event = "ADMIN_TOGGLE_ON"
+
+        make_discord_log(event=event,
+                         user=victim.display_name,
+                         admin=perp.display_name)
+
+    make_discord_log(event=event,
+                     user=victim.display_name,
+                     admin=perp.display_name)
+
     return jsonify(dict(code=200,
                         message="User successfully edited.",
                         new_values=new_values)), 200
@@ -481,6 +525,14 @@ def reset_token():
         # and isn't a deep or shallow copy
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         victim.api_token = new_token
+
+    event = "USER_TOKEN_RESET"
+    if perp.user_id != victim.user_id:
+        event = "FORCE_USER_TOKEN_RESET"
+
+    make_discord_log(event=event,
+                     user=victim.display_name,
+                     admin=perp.display_name)
                                         
     return jsonify(dict(code=200,
                         message="User successfully edited.",
