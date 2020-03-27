@@ -26,22 +26,35 @@ At first glance, there doesn't appear to be any obvious way to setup this server
     - An externally accessible host machine, preferably with [Ubuntu](https://ubuntu.com) as the OS
 
 1. Firstly, you should clone this repo to your host machine via this console command:
+    
     ```git clone https://github.com/milasoftwaregroup/imago```
 
 2. Now that you have the server scripts on your machine, make sure that you're in the repo's directory and run the following command:
+    
     ```pip install -r requirements.txt```
+    
     This will install the necessary dependencies for you. If you have more than one version of Python installed, you make need to use `pip3` instead.
 
 3. It's configuring time! To start off, rename `config.example.yml` to `config.yml` and begin editing it. You are able to configure whatever values to whatever you wish.
 
-4. Great! You're getting there, but there's one more thing you need to do before you can start the server. If you ran the start script at this point, the server would terminate as soon as you closed the terminal. To prevent this, you can use screen, Docker or anything similar to keep your application running in the background. We recommend you use screen as it's much simpler than Docker and does the job well. To enter a screen session, run:
+4. Great! You're getting there, but there's one more thing you need to do before you can start the server. If you ran the start script at this point, the server would terminate as soon as you closed the terminal. 
+
+To prevent this, you can use screen, Docker or anything similar to keep your application running in the background. We recommend you use screen as it's much simpler than Docker and does the job well. To enter a screen session, run:
+    
     ```screen -S <some_name>```
 
-5. To start the server, you need to [cd](https://www.google.co.uk/url?sa=t&rct=j&q=&esrc=s&source=web&cd=11&cad=rja&uact=8&ved=2ahUKEwiN0pGc_LroAhUYkHIEHTTiC1wQFjAKegQIBxAB&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FCd_(command)&usg=AOvVaw3bknciTsDVK0HpAMlObHtH) into the `imagoweb` folder and run the imago.py file. This is commonly done by running:
+5. To start the server, you need to [cd](https://www.google.co.uk/url?sa=t&rct=j&q=&esrc=s&source=web&cd=11&cad=rja&uact=8&ved=2ahUKEwiN0pGc_LroAhUYkHIEHTTiC1wQFjAKegQIBxAB&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FCd_(command)&usg=AOvVaw3bknciTsDVK0HpAMlObHtH) into the `imagoweb` folder and run the imago.py file. 
+
+This is commonly done by running:
+    
     ```python imago.py```
+    
     Similarly to step 2, you may find that you need to use `python3` instead of `python` if you have multiple Python versions installed.
 
-6. You should now be able to find the server at the configured port of your IP address. However, if you own a domain name, you may want to serve Imago at that domain. For this, we can use Nginx with a configuration that looks something like this:
+6. You should now be able to find the server at the configured port of your IP address. However, if you own a domain name, you may want to serve Imago at that domain. 
+
+For this, we can use Nginx with a configuration that looks something like this:
+    
     ```
     server {
         listen 80;
@@ -55,7 +68,9 @@ At first glance, there doesn't appear to be any obvious way to setup this server
             proxy_set_header   X-Forwarded-For      $proxy_add_x_forwarded_for;
             proxy_set_header   X-Forwarded-Proto    $scheme;
         }
-    }```
+    }
+    ```
+    
     If you're new to Nginx, see [the Nginx Beginner's Guide](http://nginx.org/en/docs/beginners_guide.html).
 
     **[Note]**: If you do not own a domain name or don't want to host this server on a domain name, you can skip this and all preceding steps.
