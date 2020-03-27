@@ -19,6 +19,7 @@ At first glance, there doesn't appear to be any obvious way to setup this server
 0. There are several necessities that you will need to install before you attempt to install this server, they are as follows:
     - [Python 3.6](https://www.python.org/downloads/release/python-3610/) or later
     - [GIT](https://git-scm.com/downloads)
+    - A [PostgreSQL](https://postgresql.org) server
     - A web server or reverse proxy such as [Nginx](https://nginx.com)
     - Something like [screen](https://gnu.org/software/screen/) or [Docker](https://docker.com) to keep your application running the background
     - A [CloudFlare](https://cloudflare.com) account
