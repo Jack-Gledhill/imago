@@ -1,0 +1,26 @@
+<!-- 
+Copyright (C) Mila Software Group 2018-2020
+------------------------------------------- 
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta id="version-proxy" data-version-info='{{ version|tojson }}'>
+    {% include "extends/head.html" %}
+    {% block head_imports %}
+    {% endblock %}
+
+    {% block head_title %}
+        <title>Imago</title>
+    {% endblock %}
+</head>
+<body>
+    {% block base_body_content %}
+    {% endblock %}
+
+    {% include "extends/footer.html" %}
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

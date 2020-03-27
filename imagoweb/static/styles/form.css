@@ -1,0 +1,116 @@
+/* Check box */
+.check-container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-top: 25px;
+  cursor: pointer;
+  font-size: 19px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  text-align: left;
+}
+.check-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #dd2e44;
+  transition: .17s ease-in-out;
+  border-radius: 3px;
+}
+.check-container:hover input ~ .checkmark {
+  background-color: #4196f7;
+}
+.check-container input:checked ~ .checkmark {
+  background-color: #43b581;
+}
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+.check-container input:checked ~ .checkmark:after {
+  display: block;
+}
+.check-container .checkmark:after {
+  left: 9px;
+  top: 5px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+/* Input fields */
+.field-container {
+  margin-top: 20px;
+  text-align: left;
+}
+.input-header {
+  margin-bottom: 8px;
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  color: rgb(142, 146, 151);
+}
+.input-box {
+  padding: 10px;
+  height: 40px;
+  box-sizing: border-box;
+  width: calc(100% - 160px - 50px);
+  border-radius: 3px;
+  color: #2C2F33;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  transition: border-color .2s ease-in-out;
+  cursor: text;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+.input-box:focus {
+  border-color: #4196f7;
+  outline-width: 0;
+  -webkit-animation-delay: 1s; /* Safari support - any positive time runs instantly */
+  -webkit-animation-name: autofill;
+  -webkit-animation-fill-mode: both;
+  -webkit-text-fill-color: #2C2F33;
+}
+@-webkit-keyframes autofill {
+  0%, 100% {
+      color: #2C2F33;
+      background: rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Submit button */
+.submit-button {
+  margin-top: 40px;
+  color: #fff;
+  font-size: 16px;
+  height: 40px;
+  transition: background-color .17s ease;
+  border-radius: 3px;
+  border: none;
+  width: 460px;
+  cursor: pointer;
+  float: left;
+}
+.submit-button:focus {
+  outline: 0 !important;
+  border-color: none;
+}

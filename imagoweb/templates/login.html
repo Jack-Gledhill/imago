@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block head_imports %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/buttons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/banners.css') }}">
+{% endblock %}
+
+{% block head_title %}
+    <title>Imago - Login</title>
+{% endblock %}
+
+{% block base_body_content %}
+    <div class="login-container">
+        <div class="banner red-banner white-text">An invalid username or password was provided.</div>
+
+        <div class="field-container">
+            <div class="input-header" id="username-header">USERNAME</div>
+            <input class="input-box" id="username-box" type="text" placeholder value>
+        </div>
+        <div class="field-container">
+            <div class="input-header" id="password-header">PASSWORD</div>
+            <input class="input-box" id="password-box" type="password" placeholder value>
+        </div>
+        
+        <button type="submit" class="submit-button blue-button" onclick="login()">Login</button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='scripts/login.js') }}"></script>
+{% endblock %}

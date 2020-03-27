@@ -1,0 +1,63 @@
+# ================
+# General settings
+# ================
+server:
+    host: "0.0.0.0"
+    port: 5000
+
+file_optimisation:
+    compress: yes
+    quality: 85
+
+allowed_extensions:
+    - png
+    - jpg
+    - gif
+
+max_file_size: 
+    megabytes: 2
+    kilobytes: 0
+
+logging:
+    level: INFO
+
+generator:
+    filename: 8
+    token: 56
+
+figlet: 
+    boot: MSGs Imago
+    exit: Goodbye
+    font: standard
+
+version:
+    major: 1
+    minor: 0
+    patch: 0
+    release: stable
+
+# ================
+# Superuser config
+# ================
+superuser:
+    username: superuser
+    password: youshallnotpass
+
+    display_name: Administrator
+    api_token: Master youshallnotpass 
+
+# =================
+# External services
+# =================
+postgres:
+    user: user
+    password: youshallnotpass
+
+    port: 5432
+    host: 127.0.0.1
+
+    database: imago
+
+honeybadger:
+    enabled: true
+    key: <key>

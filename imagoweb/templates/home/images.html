@@ -1,0 +1,27 @@
+{% extends "home/base.html" %}
+
+{% block body_content %}
+    <div class="side-container">
+        <table class="side-table">
+            <tr>
+                <th>Image ID</th>
+                <th>Discriminator</th>
+                <th>Upload Date</th>
+                <th>Actions</th>
+            </tr>
+            {% for i in images %}
+                <tr id="{{ i.discrim }}">
+                    <td>{{ i.image_id }}</td>
+                    <td><a href="{{ url_for('static', filename='uploads/{{ i.discrim }}') }}">{{ i.discrim }}</a></td>
+                    <td>{{ i.created_at_friendly }}</td>
+                    <td>
+                        <button class="action-button red-button tooltip" onclick="delete_image('{{ i.discrim }}')">
+                            <i class="fas fa-trash"></i>
+                            <span class="tooltiptext">Delete Image</span>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

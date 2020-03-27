@@ -1,0 +1,17 @@
+.banner {
+    border-radius: 3px;
+    padding: 12px;
+    color: #2C2F33;
+    text-align: left;
+    display: none;
+}
+.banner.show {
+    display: block;
+}
+.banner.white-text {
+    color: white;
+}
+.red-banner {
+    background-color: rgba(240,71,71,.3);
+    border: 1px solid #f04747;
+}

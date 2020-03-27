@@ -1,0 +1,31 @@
+{% extends "admin/base.html" %}
+
+{% block body_content %}
+    <div class="side-container">
+        <div class="field-container">
+            <div class="input-header" id="username-header">USERNAME</div>
+            <input class="input-box" id="username-box" type="text" placeholder value onfocus="this.removeAttribute('readonly');" readonly>
+        </div>
+        <div class="field-container">
+            <div class="input-header" id="password-header">PASSWORD</div>
+            <input class="input-box" id="password-box" type="password" placeholder value onfocus="this.removeAttribute('readonly');" readonly>
+        </div>
+        <div class="field-container">
+            <div class="input-header" id="display-header">DISPLAY NAME</div>
+            <input class="input-box" id="display-box" type="text" placeholder value>
+        </div>
+        {% if is_superuser %}
+            <label class="check-container">Grant Administrator permissions
+                <input class="check-box" id="admin-box" type="checkbox">
+                <span class="checkmark"></span>
+            </label>
+        {% else %}
+            <label class="check-container" style="display: none;">Grant Administrator permissions
+                <input class="check-box" id="admin-box" type="checkbox">
+                <span class="checkmark"></span>
+            </label>
+        {% endif %}
+        
+        <button type="submit" class="submit-button blue-button" onclick="new_user()">Create User</button>
+    </div>
+{% endblock %}

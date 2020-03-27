@@ -1,0 +1,8 @@
+attrdict
+flask
+honeybadger
+pillow
+Psycopg2
+pyfiglet
+PyYAML
+termcolor

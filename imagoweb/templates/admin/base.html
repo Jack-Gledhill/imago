@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block head_imports %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/form.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/table.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/buttons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/tooltip.css') }}">
+    <meta id="data-proxy" data-user-id="{{ user.user_id }}">
+{% endblock %}
+
+{% block head_title %}
+    <title>Imago - Admin Panel</title>
+{% endblock %}
+
+{% block base_body_content %}
+    {% include "admin/extends/nav_bar.html" %}
+    {% include "admin/extends/sidenav.html" %}
+
+    {% block body_content %}
+    {% endblock %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='scripts/admin.js') }}"></script>
+{% endblock %}

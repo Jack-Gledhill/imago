@@ -1,0 +1,20 @@
+{% include "base.html" %}
+
+{% block head_imports %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/errors.css') }}">
+{% endblock %}
+
+{% block head_title %}
+    <title>404 - Page not found</title>
+{% endblock %}
+
+{% block base_body_content %}
+    <div class="content">
+        <h1 class="emoticon">¯\_( ツ )_/¯</h1>
+        <br>
+        <p class="code">404 - Page not found</p>
+        <h1>Walking in circles.</h1>
+        <h3>I'm sure I've seen that rock before...</h3>
+        <p class="return" onclick="window.history.back();"><a class="arrow">←</a>&nbsp; Go back</p>
+    </div>
+{% endblock %}

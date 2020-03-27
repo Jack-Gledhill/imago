@@ -1,0 +1,55 @@
+{% extends "admin/base.html" %}
+
+{% block body_content %}
+    <div class="side-container">
+        <table class="side-table">
+            <tr>
+                <th>User ID</th>
+                <th>Username</th>
+                <th>Display Name</th>
+                <th>Administrator</th>
+                <th>Actions</th>
+                <th>
+                    <a class="green-button table-button" href="/home/admin/new">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </th>
+            </tr>
+            {% for u in users %}
+                <tr id="{{ u.user_id }}">
+                    <td>{{ u.user_id }}</td>
+                    <td>{{ u.username }}</td>
+                    <td>{{ u.display_name }}</td>
+                    <td>{{ "Yes" if u.is_admin else "No" }}</td>
+                    <td>
+                        {% if u.user_id not in (user.user_id, superuser_id) and (not u.is_admin or superuser)  %}
+                            {% if user.user_id == superuser_id %}
+                                <button class="action-button blue-button tooltip" onclick="toggle_admin({{ u.user_id }})">
+                                    <i class="fas fa-user-shield"></i>
+                                    <span class="tooltiptext">Toggle Administrator</span>
+                                </button>
+                            {% endif %}
+                            <button class="action-button green-button tooltip" onclick="reset_token({{ u.user_id }})">
+                                <i class="fas fa-redo"></i>
+                                <span class="tooltiptext">Reset API token</span>
+                            </button>
+                            <button class="action-button gold-button tooltip">
+                                <a href="/home/admin/edit/{{ u.user_id }}">
+                                    <i class="fas fa-pen"></i>
+                                    <span class="tooltiptext">Edit Account</span>
+                                </a>
+                            </button>
+                            <button class="action-button red-button tooltip" onclick="delete_user({{ u.user_id }})">
+                                <i class="fas fa-trash"></i>
+                                <span class="tooltiptext">Delete Account</span>
+                            </button>
+                        {% else %}
+                            No actions available for this user.
+                        {% endif %}
+                    </td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
