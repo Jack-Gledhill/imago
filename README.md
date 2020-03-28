@@ -13,6 +13,18 @@ Here's what you can expect from Imago once you install it on your machine and ge
 - secure token authorization
 - optional Discord webhook logging
 
+## Example ShareX Configuration
+
+At first, configuring ShareX may not seem like a simple task. So here's an example for you:
+
+Field | Value
+----- | -----
+URL | https://<your domain>/api/upload
+Method | POST
+Body | Form data (multipart/form-data)
+File form name | `upload`
+Headers (key: value) | Authorization: <your api token>
+
 ## Installation
 
 At first glance, there doesn't appear to be any obvious way to setup this server. So here's a guide on how to do it yourself!
