@@ -19,7 +19,7 @@ At first, configuring ShareX may not seem like a simple task. So here's an examp
 
 Field | Value
 ----- | -----
-URL | https://your domain/api/upload
+URL | your domain/api/upload
 Method | POST
 Body | Form data (multipart/form-data)
 File form name | `upload`
