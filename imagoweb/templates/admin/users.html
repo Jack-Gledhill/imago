@@ -4,11 +4,11 @@
     <div class="side-container">
         <table class="side-table">
             <tr>
-                <th>User ID</th>
-                <th>Username</th>
-                <th>Display Name</th>
-                <th>Administrator</th>
-                <th>Actions</th>
+                <th>{{ locale.admin.tables.USER_ID }}</th>
+                <th>{{ locale.admin.tables.USERNAME }}</th>
+                <th>{{ locale.admin.tables.DISPLAY_NAME }}</th>
+                <th>{{ locale.admin.tables.ADMINISTRATOR }}</th>
+                <th>{{ locale.admin.tables.ACTIONS }}</th>
                 <th>
                     <a class="green-button table-button" href="/home/admin/new">
                         <i class="fas fa-plus"></i>
@@ -26,25 +26,25 @@
                             {% if user.user_id == superuser_id %}
                                 <button class="action-button blue-button tooltip" onclick="toggle_admin({{ u.user_id }})">
                                     <i class="fas fa-user-shield"></i>
-                                    <span class="tooltiptext">Toggle Administrator</span>
+                                    <span class="tooltiptext">{{ locale.admin.buttons.TOGGLE_ADMIN }}</span>
                                 </button>
                             {% endif %}
                             <button class="action-button green-button tooltip" onclick="reset_token({{ u.user_id }})">
                                 <i class="fas fa-redo"></i>
-                                <span class="tooltiptext">Reset API token</span>
+                                <span class="tooltiptext">{{ locale.admin.buttons.RESET_TOKEN }}</span>
                             </button>
                             <button class="action-button gold-button tooltip">
                                 <a href="/home/admin/edit/{{ u.user_id }}">
                                     <i class="fas fa-pen"></i>
-                                    <span class="tooltiptext">Edit Account</span>
+                                    <span class="tooltiptext">{{ locale.admin.buttons.EDIT_ACCOUNT }}</span>
                                 </a>
                             </button>
                             <button class="action-button red-button tooltip" onclick="delete_user({{ u.user_id }})">
                                 <i class="fas fa-trash"></i>
-                                <span class="tooltiptext">Delete Account</span>
+                                <span class="tooltiptext">{{ locale.admin.buttons.DELETE_ACCOUNT }}</span>
                             </button>
                         {% else %}
-                            No actions available for this user.
+                            {{ locale.admin.tables.NO_USER_ACTIONS }}
                         {% endif %}
                     </td>
                     <td></td>

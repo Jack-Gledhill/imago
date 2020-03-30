@@ -4,10 +4,10 @@
     <div class="side-container">
         <table class="side-table">
             <tr>
-                <th>Image ID</th>
-                <th>Discriminator</th>
-                <th>Upload Date</th>
-                <th>Actions</th>
+                <th>{{ locale.home.tables.IMAGE_ID }}</th>
+                <th>{{ locale.home.tables.DISCRIMINATOR }}</th>
+                <th>{{ locale.home.tables.UPLOAD_DATE }}</th>
+                <th>{{ locale.home.tables.ACTIONS }}</th>
             </tr>
             {% for i in images %}
                 <tr id="{{ i.discrim }}">
@@ -17,7 +17,7 @@
                     <td>
                         <button class="action-button red-button tooltip" onclick="delete_image('{{ i.discrim }}')">
                             <i class="fas fa-trash"></i>
-                            <span class="tooltiptext">Delete Image</span>
+                            <span class="tooltiptext">{{ locale.home.buttons.DELETE_IMAGE }}</span>
                         </button>
                     </td>
                 </tr>

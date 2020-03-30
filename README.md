@@ -12,6 +12,7 @@ Here's what you can expect from Imago once you install it on your machine and ge
 - admin options for user and upload control
 - secure token authorization
 - optional Discord webhook logging
+- WIP localization files for different languages
 
 ## Example ShareX Configuration
 

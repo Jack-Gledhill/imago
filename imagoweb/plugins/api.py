@@ -16,11 +16,12 @@ from flask import abort, make_response, render_template, request, redirect, json
 # ======================
 # Import local libraries
 # ======================
-from imagoweb.util.constants import app, cache, config, const, epoch, pool
+from imagoweb.util.constants import app, cache, config, const, epoch, locales, pool
 from imagoweb.util.utilities import allowed_file, check_user, first, generate_discrim, generate_token, get_user, make_discord_log, optimise_image
 from imagoweb.util.blueprints import upload, user
 
 BASE = "/api"
+LOCALE = locales.get(config.default_locale).api
 
 app.config["MAX_IMAGE_FILESIZE"] = config.max_file_size.megabytes * 1024**2 + \
                                    config.max_file_size.kilobytes * 1024
@@ -32,27 +33,27 @@ def check():
 
     if not request.is_json:
         return jsonify(dict(code=422,
-                            message="Missing JSON data.")), 422
+                            message=LOCALE.missing.JSON)), 422
 
     user_id = request.json.get("user_id")
     password = request.json.get("password")
 
     if None in (user_id, password):        
         return jsonify(dict(code=422,
-                            message="Missing JSON data.")), 422
+                            message=LOCALE.missing.JSON)), 422
 
     user = get_user(token_or_id=user_id)
 
     if user is None:
         return jsonify(dict(code=422,
-                            message="Invalid user ID.")), 422
+                            message=LOCALE.invalid.USER)), 422
 
     if user.password != password:
         return jsonify(dict(code=403,
-                            message="Password is not correct.")), 403
+                            message=LOCALE.invalid.PASSWORD)), 403
 
     return jsonify(dict(code=200,
-                        message="Password is correct.")), 200
+                        message=LOCALE.success.PASSWORD)), 200
 
 @app.route(rule=BASE + "/authenticate",
            methods=["POST"])
@@ -61,14 +62,14 @@ def authenticate():
 
     if not request.is_json:
         return jsonify(dict(code=422,
-                            message="Missing login data.")), 422
+                            message=LOCALE.missing.JSON)), 422
 
     username = request.json.get("username")
     password = request.json.get("password")
 
     if None in (username, password):        
         return jsonify(dict(code=422,
-                            message="Missing login data.")), 422
+                            message=LOCALE.missing.JSON)), 422
 
     if username == const.superuser.username and password == const.superuser.password:
         return jsonify(dict(const.superuser)), 200
@@ -78,7 +79,7 @@ def authenticate():
 
     if user is None:
         return jsonify(dict(code=404,
-                            message="User not found.")), 404
+                            message=LOCALE.not_found.USER)), 404
 
     return jsonify(dict(user)), 200
 
@@ -120,17 +121,17 @@ def upload_file():
 
     if user is None:
         return jsonify(dict(code=403,
-                            message="Invalid or missing authorisation token.")), 403
+                            message=LOCALE.invalid.TOKEN)), 403
 
     file = request.files.get("upload")
 
     if file is None:
         return jsonify(dict(code=422,
-                            message="Missing file data.")), 422
+                            message=LOCALE.missing.FILE)), 422
 
     if not allowed_file(filename=file.filename):
         return jsonify(dict(code=422,
-                            message="Illegal file type provided.")), 422
+                            message=LOCALE.invalid.FILETYPE)), 422
 
     discriminator = f"{generate_discrim()}.{file.filename.rsplit('.', 1)[1].lower()}"
 
@@ -179,7 +180,7 @@ def delete_file(filename: str):
 
     if user is None:
         return jsonify(dict(code=403,
-                            message="Invalid or missing authorisation token.")), 403
+                            message=LOCALE.invalid.TOKEN)), 403
 
     # ====================
     # Check if file exists
@@ -189,7 +190,7 @@ def delete_file(filename: str):
     
     if image is None:
         return jsonify(dict(code=404,
-                            message="File does not exist.")), 404
+                            message=LOCALE.not_found.FILE)), 404
 
     # =========================================================
     # - User isn't admin and isn't trying to delete their image
@@ -198,7 +199,7 @@ def delete_file(filename: str):
     if (not user.is_admin and user.user_id != image.owner_id) \
        or (user.is_admin and image.owner.is_admin and user.user_id != image.owner_id and user.user_id != const.superuser.user_id):
         return jsonify(dict(code=403,
-                            message="You do not own this file.")), 403
+                            message=LOCALE.no_perms.FILE)), 403
 
     os.remove(path=f"static/uploads/{filename}")
 
@@ -222,7 +223,7 @@ def delete_file(filename: str):
                      url=f"https://{request.url_root.lstrip('http://')}{filename}")
 
     return jsonify(dict(code=200,
-                        message="Image was deleted.")), 200
+                        message=LOCALE.success.DELETE_IMAGE)), 200
 
 @app.route(rule=BASE + "/view/<filename>")
 @app.route(rule="/i/<filename>")
@@ -249,26 +250,26 @@ def new_user():
 
     if perp is None:
         return jsonify(dict(code=403,
-                            message="Invalid or missing authorisation token.")), 403
+                            message=LOCALE.missing.TOKEN)), 403
 
     if not perp.is_admin:
         return jsonify(dict(code=403,
-                            message="Unauthorised to create users.",
+                            message=LOCALE.no_perms.CREATE_USER,
                             needed_permission="admin")), 403
 
     if not request.is_json:
         return jsonify(dict(code=422,
-                            message="Missing JSON data.",
+                            message=LOCALE.missing.JSON,
                             required_fields=["username", "password", "display_name", "admin"])), 422
 
     if None in request.json.items():
         return jsonify(dict(code=422,
-                            message="Missing JSON data, fields cannot be null.")), 422
+                            message=LOCALE.missing.JSON)), 422
 
     for key in ("username", "password", "display_name", "admin"):
         if key not in request.json.keys():
             return jsonify(dict(code=422,
-                                message="Missing JSON fields.",
+                                message=LOCALE.missing.JSON,
                                 required_fields=["username", "password", "display_name", "admin"])), 422
                             
     # =============================================================
@@ -276,12 +277,12 @@ def new_user():
     # =============================================================
     if request.json.get("admin") is not False and perp.user_id != const.superuser.user_id:
         return jsonify(dict(code=403,
-                            message="Unauthorised to create admin users, please pass admin as false.",
+                            message=LOCALE.no_perms.CREATE_ADMIN,
                             needed_permission="superuser")), 403
 
     if request.json.get("username") in (u.username for u in cache.users):
         return jsonify(dict(code=409,
-                            message="Username is already taken.")), 409
+                            message=LOCALE.invalid.USERNAME_TAKEN)), 409
 
     stripped_values = dict(username=request.json.get("username"),
                            password=request.json.get("password"),
@@ -309,7 +310,7 @@ def new_user():
                      admin=perp.display_name)
 
     return jsonify(dict(code=200,
-                        message="User was successfully created.",
+                        message=LOCALE.success.CREATE_USER,
                         user_id=user_id)), 200
 
 @app.route(rule=BASE + "/user/delete",
@@ -323,17 +324,17 @@ def delete_user():
 
     if user is None:
         return jsonify(dict(code=403,
-                            message="Invalid or missing authorisation token.")), 403
+                            message=LOCALE.invalid.TOKEN)), 403
 
     if not request.is_json:
         return jsonify(dict(code=422,
-                            message="Missing JSON data.")), 422
+                            message=LOCALE.missing.JSON)), 422
 
     victim = get_user(token_or_id=request.json.get("user_id"))
 
     if victim is None:
         return jsonify(dict(code=422,
-                            message="User does not exist with that ID.")), 422
+                            message=LOCALE.invalid.USER)), 422
 
     # ========================================================
     # - User isn't admin and isn't trying to delete themselves
@@ -344,7 +345,7 @@ def delete_user():
        or (victim.user_id == const.superuser.user_id) \
        or (user.is_admin and victim.is_admin and user.user_id != const.superuser.user_id):
         return jsonify(dict(code=403,
-                            message="Unauthorised to do this.")), 403
+                            message=LOCALE.no_perms.DELETE_USER)), 403
 
     with pool.cursor() as con:
         query = """DELETE FROM image_users
@@ -360,7 +361,7 @@ def delete_user():
                      admin=user.display_name)
 
     return jsonify(dict(code=200,
-                        message="User successfully deleted.")), 200
+                        message=LOCALE.success.DELETE_USER)), 200
 
 @app.route(rule=BASE + "/user/edit",
            methods=["PUT", "POST"])
@@ -373,17 +374,17 @@ def edit_user():
 
     if perp is None:
         return jsonify(dict(code=403,
-                            message="Invalid or missing authorisation token.")), 403
+                            message=LOCALE.invalid.TOKEN)), 403
 
     if not request.is_json:
         return jsonify(dict(code=422,
-                            message="Missing JSON data.")), 422
+                            message=LOCALE.missing.JSON)), 422
 
     victim = get_user(token_or_id=request.json.get("user_id"))
 
     if victim is None:
         return jsonify(dict(code=422,
-                            message="Invalid or missing user ID.")), 422
+                            message=LOCALE.invalid.USER)), 422
 
     # ========================================================
     # - User isn't admin and isn't trying to change themselves
@@ -394,13 +395,13 @@ def edit_user():
        or (victim.user_id == const.superuser.user_id) \
        or (perp.is_admin and victim.is_admin and not perp.user_id == victim.user_id and perp.user_id != const.superuser.user_id):
         return jsonify(dict(code=403,
-                            message="Unauthorised to do this.")), 403
+                            message=LOCALE.no_perms.EDIT_USER)), 403
 
     new_stuff = request.json.get("new_values")
 
     if not new_stuff:
         return jsonify(dict(code=422,
-                            message="Missing JSON data.")), 422
+                            message=LOCALE.missing.JSON)), 422
 
     # ==========================
     # Check if username is taken
@@ -411,7 +412,7 @@ def edit_user():
         # --------------------------------------
         if new_stuff.get("username") in (u.username for u in cache.users if u.user_id != victim.user_id):
             return jsonify(dict(code=409,
-                                message="Username is already taken.")), 409
+                                message=LOCALE.invalid.USERNAME_TAKEN)), 409
 
     toggled_to = None
 
@@ -421,7 +422,7 @@ def edit_user():
         # ====================================================
         if perp.user_id != const.superuser.user_id:
             return jsonify(dict(code=403,
-                                message="Unauthorised to set admin status.")), 403
+                                message=LOCALE.no_perms.CREATE_ADMIN)), 403
 
         if new_stuff.get("admin") == "toggle":
             toggled_to = new_stuff["admin"] = not victim.is_admin
@@ -470,7 +471,7 @@ def edit_user():
                      admin=perp.display_name)
 
     return jsonify(dict(code=200,
-                        message="User successfully edited.",
+                        message=LOCALE.success.EDIT_USER,
                         new_values=new_values)), 200
 
 @app.route(rule=BASE + "/user/reset",
@@ -484,17 +485,17 @@ def reset_token():
 
     if perp is None:
         return jsonify(dict(code=403,
-                            message="Invalid or missing authorisation token.")), 403
+                            message=LOCALE.invalid.TOKEN)), 403
 
     if not request.is_json:
         return jsonify(dict(code=422,
-                            message="Missing JSON data.")), 422
+                            message=LOCALE.missing.JSON)), 422
 
     victim = get_user(token_or_id=request.json.get("user_id"))
 
     if victim is None:
         return jsonify(dict(code=422,
-                            message="Invalid or missing user ID.")), 422
+                            message=LOCALE.invalid.USER)), 422
 
     # ============================================================
     # - User isn't admin and isn't trying to change themselves
@@ -505,7 +506,7 @@ def reset_token():
        or (victim.user_id == const.superuser.user_id) \
        or (perp.is_admin and victim.is_admin and not perp.user_id == victim.user_id and perp.user_id != const.superuser.user_id):
         return jsonify(dict(code=403,
-                            message="Unauthorised to do this.")), 403
+                            message=LOCALE.no_perms.TOKEN_RESET)), 403
 
     new_token = generate_token()
                       
@@ -535,5 +536,5 @@ def reset_token():
                      admin=perp.display_name)
                                         
     return jsonify(dict(code=200,
-                        message="User successfully edited.",
+                        message=LOCALE.success.TOKEN_RESET,
                         new_token=new_token)), 200

@@ -9,8 +9,7 @@ from flask import request, Response
 # ======================
 # Import local libraries
 # ======================
-from imagoweb.util.constants import app, const
-from imagoweb.util.utilities import get_user
+from imagoweb.util.constants import app, config, const, locales
 
 @app.context_processor
 def inject_globals():
@@ -18,4 +17,5 @@ def inject_globals():
     
     Effectively, this means that every page can easily access the user variable."""
 
-    return dict(version=dict(const.version))
+    return dict(version=dict(const.version),
+                locale=locales.get(config.default_locale))

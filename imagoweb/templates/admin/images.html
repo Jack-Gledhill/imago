@@ -4,11 +4,11 @@
     <div class="side-container">
         <table class="side-table">
             <tr>
-                <th>Image ID</th>
-                <th>Discriminator</th>
-                <th>Author</th>
-                <th>Upload Date</th>
-                <th>Actions</th>
+                <th>{{ locale.admin.tables.IMAGE_ID }}</th>
+                <th>{{ locale.admin.tables.DISCRIMINATOR }}</th>
+                <th>{{ locale.admin.tables.AUTHOR }}</th>
+                <th>{{ locale.admin.tables.UPLOAD_DATE }}</th>
+                <th>{{ locale.admin.tables.ACTIONS }}</th>
             </tr>
             {% for i in images %}
                 <tr id="{{ i.discrim }}">
@@ -20,10 +20,10 @@
                         {% if i.owner.user_id not in (user.user_id, superuser_id) and (not i.owner.is_admin or superuser)  %}
                             <button class="action-button red-button tooltip" onclick="delete_image('{{ i.discrim }}')">
                                 <i class="fas fa-trash"></i>
-                                <span class="tooltiptext">Delete Image</span>
+                                <span class="tooltiptext">{{ locale.admin.buttons.DELETE_IMAGE }}</span>
                             </button>
                         {% else %}
-                            No actions available for this image.
+                        {{ locale.admin.tables.NO_IMAGE_ACTIONS }}
                         {% endif %}
                     </td>
                 </tr>

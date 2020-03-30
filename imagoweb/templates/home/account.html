@@ -3,35 +3,35 @@
 {% block body_content %}
     <div class="side-container">
         <div class="field-container">
-            <div class="input-header" id="username-header">USERNAME</div>
+            <div class="input-header" id="username-header">{{ locale.home.form.USERNAME }}</div>
             <input class="input-box" id="username-box" type="text" placeholder value="{{ user.username }}" onfocus="this.removeAttribute('readonly');" readonly>
         </div>
         <div class="field-container">
-            <div class="input-header" id="display-header">DISPLAY NAME</div>
+            <div class="input-header" id="display-header">{{ locale.home.form.DISPLAY_NAME }}</div>
             <input class="input-box" id="display-box" type="text" placeholder value="{{ user.display_name }}" onfocus="this.removeAttribute('readonly');" readonly>
         </div>
         <div class="field-container">
-            <div class="input-header" id="password-header">NEW PASSWORD</div>
+            <div class="input-header" id="password-header">{{ locale.home.form.NEW_PASSWORD }}</div>
             <input class="input-box" id="password-box" type="password" placeholder value onfocus="this.removeAttribute('readonly');" readonly>
         </div>
         <div class="field-container">
-            <div class="input-header" id="c-password-header">CONFIRM PASSWORD</div>
+            <div class="input-header" id="c-password-header">{{ locale.home.form.CONFIRM_PASSWORD }}</div>
             <input class="input-box" id="c-password-box" type="password" placeholder value onfocus="this.removeAttribute('readonly');" readonly>
         </div>
         <div class="field-container">
-            <div class="input-header" id="display-header">API TOKEN</div>
-            <button class="button blue-button" id="copy-button" data-clipboard-text="{{ user.api_token }}" data-clipboard-copy onclick="copy_token()">Copy</button>
+            <div class="input-header" id="display-header">{{ locale.home.form.API_TOKEN }}</div>
+            <button class="button blue-button" id="copy-button" data-clipboard-text="{{ user.api_token }}" data-clipboard-copy onclick="copy_token()">{{ locale.home.buttons.COPY_TOKEN }}</button>
             {% if not superuser %}
-                <button class="button blue-button" id="regen-button" onclick="reset_token({{ user.user_id }})">Renew</button>
+                <button class="button blue-button" id="regen-button" onclick="reset_token({{ user.user_id }})">{{ locale.home.buttons.REGEN_TOKEN }}</button>
             {% else %}
-                <button class="button blue-button blocked" id="regen-button" onclick="reset_token({{ user.user_id }})">Renew</button>
+                <button class="button blue-button blocked" id="regen-button" onclick="reset_token({{ user.user_id }})">{{ locale.home.buttons.REGEN_TOKEN }}</button>
             {% endif %}
         </div>
         
         {% if not superuser %}
-            <button type="submit" id="edit-button" class="submit-button blue-button" onclick="edit_user('{{ user.user_id }}')">Save Changes</button>
+            <button type="submit" id="edit-button" class="submit-button blue-button" onclick="edit_user('{{ user.user_id }}')">{{ locale.home.buttons.SAVE_CHANGES }}</button>
         {% else %}
-            <button type="submit" id="edit-button" class="submit-button blue-button blocked" onclick="edit_user('{{ user.user_id }}')">Save Changes</button>
+            <button type="submit" id="edit-button" class="submit-button blue-button blocked" onclick="edit_user('{{ user.user_id }}')">{{ locale.home.buttons.SAVE_CHANGES }}</button>
         {% endif %}
     </div>
 {% endblock %}

@@ -21,8 +21,15 @@ from yaml import safe_load
 # ======================
 from imagoweb.util.blueprints import user
 
-config = AttrDict(safe_load(open(file="config.yml",
-                                 mode="r")))
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# this stops the IDE from linting errors in the code where references
+# are made to these variables, it happens because the variables aren't 
+# set until the main script has started and the IDE can't understand that
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app = None
+pool = None
+
+config = AttrDict(safe_load(open(file="config.yml")))
 
 const = AttrDict(dict(boot_dt=datetime.utcnow(),
                       version=version(major=config.version.major,
@@ -38,6 +45,13 @@ const = AttrDict(dict(boot_dt=datetime.utcnow(),
                                      token=config.superuser.api_token,
                                      admin=True,
                                      id=0)))
+
+locales = {
+    "en-US": AttrDict(safe_load(open(file="../locales/en-US.yml"))),
+    "en-UK": AttrDict(safe_load(open(file="../locales/en-UK.yml"))),
+                        
+    "de": AttrDict(safe_load(open(file="../locales/de.yml")))
+}
 
 cache = namedtuple(typename="cache", 
                    field_names="images, users")(images=[], 
