@@ -74,35 +74,35 @@ errors:
 
     403:
         TITLE: 403 - Forbidden
-        CODE: 403 - Forbidden
+        CODE: 403 - You're not allowed to go there
         HEADER: Intruder alert!
         CONTENT: Oi! This is a restricted area! Clear out!
         EMOTICON: ;-;
 
     404:
         TITLE: 404 - Page not found
-        CODE: 404 - Page not found
+        CODE: 404 - That page doesn't exist
         HEADER: Walking in circles.
         CONTENT: I'm sure I've seen that rock before...
         EMOTICON: ¯\_( ツ )_/¯
 
     429:
         TITLE: 429 - Too many requests
-        CODE: 429 - Too many requests
-        HEADER: "'Allo 'allo 'allo! What's all this then?"
-        CONTENT: There's plenty of server for everyone, slow down.
+        CODE: 429 - You're being ratelimited
+        HEADER: "Good day sir/ma'am. License & registration please?"
+        CONTENT: That'll a $5000 fine for speedin', yuh know?
         EMOTICON: ┻━┻ ﾐヽ(ಠ益ಠ)ノ彡┻━┻
 
     500:
         TITLE: 500 - Internal server error
-        CODE: 500 - Internal server error
+        CODE: 500 - It's not you, it's us
         HEADER: Mmm, toasted server.
         CONTENT: Uh oh... Fire in the server room!
         EMOTICON: (╯°□°)╯
 
     503:
         TITLE: 503 - Service unavailable
-        CODE: 503 - Service unavailable
+        CODE: 503 - This area's under maintenance
         HEADER: Stop, hammer time!
         CONTENT: Can anyone else hear a drill?
         EMOTICON: ﾉ(° -°ﾉ)
