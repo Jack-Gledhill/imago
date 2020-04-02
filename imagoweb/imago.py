@@ -17,7 +17,7 @@
 # -----------------
 # Builtin libraries
 # -----------------
-import asyncio, logging, sys, typing, os
+import asyncio, logging, platform, sys, typing, os
 
 from atexit import register
 from datetime import datetime
@@ -43,6 +43,7 @@ from imagoweb.util.blueprints import upload, user
 try:
     import attrdict, psycopg2, requests, yaml
 
+    from crontab import CronTab
     from flask import Flask
     from honeybadger.contrib import FlaskHoneybadger
     from pyfiglet import print_figlet
@@ -179,17 +180,17 @@ class Imago:
             # ================================
             # Ensure dependant db tables exist
             # ================================
-            queries = ("""CREATE TABLE IF NOT EXISTS image_users (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT, display_name TEXT, admin BOOLEAN, created_at TIMESTAMP, api_token TEXT);""",
-                       """CREATE TABLE IF NOT EXISTS uploaded_images (id SERIAL PRIMARY KEY, owner_id INT, discriminator TEXT UNIQUE, created_at TIMESTAMP);""")
+            queries = ("""CREATE TABLE IF NOT EXISTS imago_users (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT, display_name TEXT, admin BOOLEAN, created_at TIMESTAMP, api_token TEXT);""",
+                       """CREATE TABLE IF NOT EXISTS uploaded_files (id SERIAL PRIMARY KEY, owner_id INT, discriminator TEXT UNIQUE, created_at TIMESTAMP, deleted BOOLEAN);""")
 
             for query in queries:
                 con.execute(query)
 
-            # =========================
-            # Fill user and image cache
-            # =========================
+            # ========================
+            # Fill user and file cache
+            # ========================
             query = """SELECT id, username, password, display_name, admin, created_at, api_token
-                       FROM image_users
+                       FROM imago_users
                        ORDER BY id ASC;"""
 
             con.execute(query)
@@ -203,8 +204,8 @@ class Imago:
                                         created_at=account[5],
                                         token=account[6]))
 
-            query = """SELECT id, owner_id, discriminator, created_at
-                       FROM uploaded_images
+            query = """SELECT id, owner_id, discriminator, created_at, deleted
+                       FROM uploaded_files
                        ORDER BY created_at DESC;"""
 
             con.execute(query)
@@ -215,13 +216,14 @@ class Imago:
             # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
             from imagoweb.util.utilities import first
 
-            for image in con.fetchall():
-                cache.images.append(upload(id=image[0],
-                                           owner_id=image[1],
-                                           discrim=image[2],
-                                           created_at=image[3],
-                                           owner=first(iterable=cache.users,
-                                                       condition=lambda user: user.user_id == image[1])))
+            for file in con.fetchall():
+                cache.files.append(upload(id=file[0],
+                                          owner_id=file[1],
+                                          discrim=file[2],
+                                          created_at=file[3],
+                                          deleted=file[4],
+                                          owner=first(iterable=cache.users,
+                                                      condition=lambda user: user.user_id == file[1])))
 
         console.info(text=f"Server started at: http://{host}:{port}")
 
@@ -237,6 +239,31 @@ class Imago:
                 console.error(text=f"{plugin} plugin failed to boot.\n\n{error}\n\n{error.__cause__}")
 
                 self.exit()
+
+        # =================
+        # Startup cron jobs
+        # =================
+        if config.file_archive.enabled:
+            command = {
+                "Windows": 'del /S /Q archive',
+                "Linux": 'rm -rf archive/*'
+            }.get(platform.system())
+
+            if command is None:
+                console.warn(text=f"Trashbin emptying has been disabled: unknown OS in use.")
+
+            crontab = CronTab(user=True if platform.system() == "Linux" else None,
+                              tabfile="filename.tab" if platform.system() == "Windows" else None)
+            previous_cron = crontab.find_comment(comment="imago-archive")
+
+            if previous_cron:
+                crontab.remove(previous_cron)
+
+            job = crontab.new(command=command,
+                              comment="imago-archive")
+            job.minute.on(0)
+            job.hour.on(0)
+            crontab.write()
 
         # =============================
         # Start server and print FIGlet

@@ -22,9 +22,12 @@ from PIL import Image
 from imagoweb.util.blueprints import user
 from imagoweb.util.constants import cache, config, const, pool
 
+WEBHOOK_URL = "https://discordapp.com/api/webhooks/{id}/{token}"
+
 DISCORD_LOG_FORMATS = {
-    "IMAGE_DELETE": ":wastebasket: {user} deleted the image:\n{url}",
-    "IMAGE_UPLOAD": ":inbox_tray: {user} uploaded the image:\n{url}",
+    "FILE_DELETE": ":wastebasket: {user} deleted a file:\n{url}?token={hook_token}",
+    "FILE_UPLOAD": ":inbox_tray: {user} uploaded a file:\n{url}",
+    "FILE_RESTORE": ":link: {admin} restored a file by {user}:\n{url}",
 
     "USER_EDIT": ":pencil: {user} edited their account.",
     "USER_TOKEN_RESET": ":closed_lock_with_key: {user} reset their account token.",
@@ -33,7 +36,7 @@ DISCORD_LOG_FORMATS = {
     "FORCE_USER_EDIT": ":pencil: {user} was edited by {admin}.",
     "FORCE_USER_DELETE": ":wastebasket: {user} was deleted by {admin}.",
     "FORCE_USER_TOKEN_RESET": ":closed_lock_with_key: {user} had their token reset by {admin}.",
-    "FORCE_IMAGE_DELETE": ":wastebasket: {admin} deleted an image by {user}:\n{url}",
+    "FORCE_FILE_DELETE": ":wastebasket: {admin} deleted a file by {user}:\n{url}?token={hook_token}",
 
     "ADMIN_TOGGLE_ON": ":lock: {admin} made {user} an Administrator.",
     "ADMIN_TOGGLE_OFF": ":unlock: {admin} removed Administrator from {user}."
@@ -42,7 +45,7 @@ DISCORD_LOG_FORMATS = {
 def get_user(token_or_id: Union[str, int]) -> Union[user, None]:
     """Retrieves a user with a given API token or user ID.
     
-    The token is used for backend user retrieval but also for authentication when uploading images."""
+    The token is used for backend user retrieval but also for authentication when uploading files."""
 
     try:
         token_or_id = int(token_or_id)
@@ -82,7 +85,7 @@ def generate_discrim():
     # ====================================
     # Check to see if discrim is available
     # ====================================
-    while discrim in [image.discrim for image in cache.images]:
+    while discrim in [file.discrim for file in cache.files]:
         discrim = "".join(choice(ascii_letters + digits) for i in range(config.generator.filename))
         
     return discrim
@@ -105,10 +108,12 @@ def generate_token():
         
     return token
 
-def allowed_file(filename: str):
-    """This checks to see if the extension of the provided filename is legal according to the configuration file."""
+def filetype(filename: str):
+    """This checks to see if the extension of the provided filename is legal according to the configuration file.
     
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in config.allowed_extensions
+    If allowed, the extension type (e.g: image/audio) is returned. Otherwise False is returned."""
+
+    return config.allowed_extensions.get("." in filename and filename.rsplit(".", 1)[1].lower(), False)
 
 def first(iterable: Iterable[Any],
           condition: Callable) -> Any:
@@ -130,19 +135,30 @@ def all(iterable: Iterable[Any],
 
     return [item for item in iterable if condition(item)]
 
-def optimise_image(file: Any,
-                   discriminator: str):
-    """Takes in an image object from Flask and optimises it according to the configuration.
+def bypass_optimise(header: str,
+                    user: user) -> bool:
+    """Determines whether or not the provided user can and wants to bypass image compression."""
+
+    cfg = config.file_optimisation.admin_bypass
+
+    if False in (cfg.can_bypass, user.is_admin):
+        return False
+
+    if not header:
+        return cfg.by_default
+
+    return True
+
+def optimise_image(discriminator: str):
+    """Takes in an file object from Flask and optimises it according to the configuration.
     
-    Because the default .save function doesn't allow for optimisation kwargs, we need to save the image, 
-    open it with PIL and overwrite the image with the optimised data."""
+    Because the default .save function doesn't allow for optimisation kwargs, we need to save the file, 
+    open it with PIL and overwrite the file with the optimised data."""
 
     path = f"static/uploads/{discriminator}"
+    saved_file = Image.open(path)
 
-    file.save(path)
-    saved_image = Image.open(path)
-
-    saved_image.save(fp=path,
+    saved_file.save(fp=path,
                      optimize=config.file_optimisation.compress,
                      quality=config.file_optimisation.quality)
 
@@ -158,14 +174,17 @@ def make_discord_log(event: str,
         if fmt is None:
             return
 
-        message = fmt.format(**event_values)
         webhook = first(iterable=config.discord.webhooks,
                         condition=lambda hookconfig: event in hookconfig.events)
 
         if webhook is None:
             return
 
-        response = post(url=webhook.url,
+        message = fmt.format(hook_token=webhook.token,
+                             **event_values)
+
+        response = post(url=WEBHOOK_URL.format(id=webhook.id,
+                                               token=webhook.token),
                         json={
                             "content": message,
                             "username": webhook.username

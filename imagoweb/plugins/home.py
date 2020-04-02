@@ -29,10 +29,10 @@ def account_page():
                            user=user,
                            superuser=user.user_id == const.superuser.user_id)
 
-@app.route(rule="/images")
-@app.route(rule="/home/images")
-def images_page():
-    """Displays a table of the users images."""
+@app.route(rule="/files")
+@app.route(rule="/home/files")
+def files_page():
+    """Displays a table of the users files."""
 
     user = check_user(token=request.cookies.get("_auth_token"))
 
@@ -40,7 +40,7 @@ def images_page():
         return redirect(location="/api/login",
                         code=303), 303
 
-    return render_template(template_name_or_list="home/images.html",
+    return render_template(template_name_or_list="home/files.html",
                            user=user,
-                           images=all(iterable=cache.images,
-                                      condition=lambda image: image.owner_id == user.user_id))
+                           files=all(iterable=cache.files,
+                                     condition=lambda file: file.owner_id == user.user_id and not file.deleted))

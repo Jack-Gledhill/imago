@@ -13,6 +13,23 @@ Here's what you can expect from Imago once you install it on your machine and ge
 - secure token authorization
 - optional Discord webhook logging
 - WIP localization files for different languages
+- configurable file compression options (with admin bypass options)
+
+## Compression
+
+This server has a set of configurable image compression options. At the moment, it uses Python's image manipulation package (PIL), limiting it strictly to image files only. 
+
+### The compress option
+
+Setting the 'compress' option to `yes` means that PIL will attempt to lower the file size without damaging the quality too much.
+
+### The quality option
+
+You can change the resolution of an image by changing the quality option. A lower number means a lower quality and smaller file size, a higher number means higher quality and file size. The number can only be as high as 100 because it's a percentage, therefore a number higher than 100 may cause stretching and distortion.
+
+### Admin bypass
+
+Administrators can be allowed to bypass compression with a number of options. You can allow them to bypass this by setting the can_bypass option to `yes`. If this is done, you can also choose whether or not admins need to pass a specific header in their request to bypass compression. If compression is not bypassed for admins by default then they need to pass a `Compression-Bypass` header with any True content (something other than an empty string).
 
 ## Example ShareX Configuration
 

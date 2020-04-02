@@ -23,7 +23,8 @@ api:
         CREATE_ADMIN: You're not authorised to create Administrator users, please pass admin as false.
 
     success:
-        DELETE_IMAGE: Afbeelding deleted successfully.
+        DELETE_FILE: Afbeelding deleted successfully.
+        RESTORE_FILE: That file has been restored.
         PASSWORD: Huidig wachtwoord is correct.
         CREATE_USER: Gebruiker was successfully created.
         DELETE_USER: Gebruiker was successfully deleted.
@@ -36,7 +37,8 @@ admin:
     nav:
         PROJECT_TITLE: Ontwerpen Imago
         USERS: Gebruikers
-        IMAGES: Afbeeldingen
+        FILES: Afbeeldingen
+        ARCHIVE: Archive
 
     form:
         USERNAME: GEBRUIKERSNAAM
@@ -45,7 +47,7 @@ admin:
         GRANT_ADMIN: Grant Administrator permissions
 
     tables:
-        IMAGE_ID: Afbeelding ID
+        FILE_ID: Afbeelding ID
         DISCRIMINATOR: Discriminator
         AUTHOR: Author
         UPLOAD_DATE: Upload Date
@@ -56,12 +58,13 @@ admin:
         ADMINISTRATOR: Beheerder
 
         ACTIONS: Acties
-        NO_IMAGE_ACTIONS: No actions available for this image.
+        NO_FILE_ACTIONS: No actions available for this file.
         NO_USER_ACTIONS: No actions available for this user.
 
     buttons:
         EDIT_USER: Bewerken User
-        DELETE_IMAGE: Delete Image
+        DELETE_FILE: Delete File
+        RESTORE_FILE: Restore File
         CREATE_USER: Create User
 
         TOGGLE_ADMIN: Toggle Administrator
@@ -113,7 +116,7 @@ home:
     nav:
         PROJECT_TITLE: Project Imago
         ACCOUNT: Account
-        IMAGES: Afbeeldingen
+        FILES: Afbeeldingen
 
     form:
         USERNAME: GEBRUIKERSNAAM
@@ -123,7 +126,7 @@ home:
         API_TOKEN: API TOKEN
 
     tables:
-        IMAGE_ID: Afbeelding ID
+        FILE_ID: Afbeelding ID
         DISCRIMINATOR: Discriminator
         UPLOAD_DATE: Upload Date
         ACTIONS: Acties
@@ -132,7 +135,7 @@ home:
         COPY_TOKEN: Kopiëren
         REGEN_TOKEN: Verversen
         SAVE_CHANGES: Save Changes
-        DELETE_IMAGE: Delete Afbeelding
+        DELETE_FILE: Delete Afbeelding
 
 login:
     TITLE: Imago - Inloggen

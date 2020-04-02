@@ -7,14 +7,30 @@ server:
     host: "0.0.0.0"
     port: 5000
 
+file_archive:
+    enabled: true
+
 file_optimisation:
     compress: yes
     quality: 85
 
+    admin_bypass:
+        can_bypass: yes
+        by_default: no
+
 allowed_extensions:
-    - png
-    - jpg
-    - gif
+    png: image
+    jpg: image
+    ico: image
+
+    mov: video
+    mp4: video
+    gif: gif
+
+    wav: audio
+    mp3: audio
+
+    txt: other
 
 max_file_size: 
     megabytes: 2
@@ -33,7 +49,7 @@ figlet:
     font: standard
 
 version:
-    major: 1
+    major: 2
     minor: 1
     patch: 0
     release: stable

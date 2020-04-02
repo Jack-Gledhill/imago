@@ -23,7 +23,8 @@ api:
         CREATE_ADMIN: You're not authorized to create Administrator users, please pass admin as false.
 
     success:
-        DELETE_IMAGE: Image deleted successfully.
+        DELETE_FILE: File deleted successfully.
+        RESTORE_FILE: That file has been restored.
         PASSWORD: Password is correct.
         CREATE_USER: User was successfully created.
         DELETE_USER: User was successfully deleted.
@@ -36,7 +37,8 @@ admin:
     nav:
         PROJECT_TITLE: Project Imago
         USERS: Users
-        IMAGES: Images
+        FILES: Files
+        ARCHIVE: Archive
 
     form:
         USERNAME: USERNAME
@@ -45,7 +47,7 @@ admin:
         GRANT_ADMIN: Grant Administrator permissions
 
     tables:
-        IMAGE_ID: Image ID
+        FILE_ID: File ID
         DISCRIMINATOR: Discriminator
         AUTHOR: Author
         UPLOAD_DATE: Upload Date
@@ -56,12 +58,13 @@ admin:
         ADMINISTRATOR: Administrator
 
         ACTIONS: Actions
-        NO_IMAGE_ACTIONS: No actions available for this image.
+        NO_FILE_ACTIONS: No actions available for this file.
         NO_USER_ACTIONS: No actions available for this user.
 
     buttons:
         EDIT_USER: Edit User
-        DELETE_IMAGE: Delete Image
+        DELETE_FILE: Delete File
+        RESTORE_FILE: Restore File
         CREATE_USER: Create User
 
         TOGGLE_ADMIN: Toggle Administrator
@@ -113,7 +116,7 @@ home:
     nav:
         PROJECT_TITLE: Project Imago
         ACCOUNT: Account
-        IMAGES: Images
+        FILES: Files
 
     form:
         USERNAME: USERNAME
@@ -124,7 +127,7 @@ home:
         API_TOKEN: API TOKEN
 
     tables:
-        IMAGE_ID: Image ID
+        FILE_ID: File ID
         DISCRIMINATOR: Discriminator
         UPLOAD_DATE: Upload Date
         ACTIONS: Actions
@@ -133,7 +136,7 @@ home:
         COPY_TOKEN: Copy
         REGEN_TOKEN: Renew
         SAVE_CHANGES: Save Changes
-        DELETE_IMAGE: Delete Image
+        DELETE_FILE: Delete File
 
 login:
     TITLE: Imago - Login

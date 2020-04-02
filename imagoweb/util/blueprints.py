@@ -22,8 +22,9 @@ class user(blueprint):
 class upload(blueprint):
     def __init__(self,
                  **upload_data: dict):
-        self.image_id = upload_data.pop("id")
+        self.file_id = upload_data.pop("id")
         self.discrim = upload_data.pop("discrim")
+        self.deleted = upload_data.pop("deleted")
 
         self.owner_id = upload_data.pop("owner_id")
         self.created_at = upload_data.pop("created_at")

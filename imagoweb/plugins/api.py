@@ -17,7 +17,7 @@ from flask import abort, make_response, render_template, request, redirect, json
 # Import local libraries
 # ======================
 from imagoweb.util.constants import app, cache, config, const, epoch, locales, pool
-from imagoweb.util.utilities import allowed_file, check_user, first, generate_discrim, generate_token, get_user, make_discord_log, optimise_image
+from imagoweb.util.utilities import filetype, bypass_optimise, check_user, first, generate_discrim, generate_token, get_user, make_discord_log, optimise_image
 from imagoweb.util.blueprints import upload, user
 
 BASE = "/api"
@@ -115,7 +115,7 @@ def login():
 @app.route(rule=BASE + "/upload",
            methods=["POST"])
 def upload_file():
-    """This allows a user to upload any sort of image to the server."""
+    """This allows a user to upload any sort of file to the server."""
 
     user = check_user(token=request.headers.get("Authorization"))
 
@@ -129,17 +129,22 @@ def upload_file():
         return jsonify(dict(code=422,
                             message=LOCALE.missing.FILE)), 422
 
-    if not allowed_file(filename=file.filename):
+    file_type = filetype(filename=file.filename)
+
+    if file_type is False:
         return jsonify(dict(code=422,
                             message=LOCALE.invalid.FILETYPE)), 422
 
     discriminator = f"{generate_discrim()}.{file.filename.rsplit('.', 1)[1].lower()}"
 
-    optimise_image(file=file,
-                   discriminator=discriminator)
+    file.save(f"static/uploads/{discriminator}")
+
+    if file_type == "image" and not bypass_optimise(header=request.headers.get("Compression-Bypass"),
+                                                    user=user):
+        optimise_image(discriminator=discriminator)
 
     with pool.cursor() as con:
-        query = """INSERT INTO uploaded_images (owner_id, discriminator, created_at)
+        query = """INSERT INTO uploaded_files (owner_id, discriminator, created_at)
                    VALUES (%(owner_id)s, %(discrim)s, %(created_at)s)
                    
                    RETURNING id;"""
@@ -149,32 +154,34 @@ def upload_file():
                          discrim=discriminator,
                          created_at=datetime.utcnow()))
 
-        image_id = con.fetchone()[0]
+        file_id = con.fetchone()[0]
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        # since we're always inserting new images to the front of the image cache,
-        # the images will always be in descending order of creation time
+        # since we're always inserting new files to the front of the file cache,
+        # the files will always be in descending order of creation time
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        cache.images.insert(0, upload(id=image_id,
-                                      owner_id=user.user_id,
-                                      discrim=discriminator,
-                                      created_at=datetime.utcnow(),
-                                      owner=user))
+        cache.files.insert(0, upload(id=file_id,
+                                     owner_id=user.user_id,
+                                     discrim=discriminator,
+                                     created_at=datetime.utcnow(),
+                                     owner=user,
+                                     deleted=False))
 
     url = f"https://{request.url_root.lstrip('http://')}{discriminator}"
 
-    make_discord_log(event="IMAGE_UPLOAD",
+    make_discord_log(event="FILE_UPLOAD",
                      user=user.display_name,
                      url=url)
 
     return url, 200
 
-@app.route(rule=BASE + "/delete/<filename>",
-           methods=["DELETE", "POST"])
-def delete_file(filename: str):
-    """Deletes a file with a given filename.
+@app.route(rule=BASE + "/restore/<filename>",
+           methods=["POST"])
+def restore_file(filename: str):
+    """Restores a previously deleted file with a given filename.
     
-    This runs a check on the user's token to see if they're allowed to delete the image."""
+    This runs a check on the user's token to see if they're allowed to restore the file.
+    Only admins are allowed to restore files to prevent abuse."""
 
     user = check_user(token=request.headers.get("Authorization"))
 
@@ -185,59 +192,194 @@ def delete_file(filename: str):
     # ====================
     # Check if file exists
     # ====================
-    image = first(iterable=cache.images,
-                  condition=lambda image: image.discrim == filename)
+    file = first(iterable=cache.files,
+                  condition=lambda file: file.discrim == filename)
     
-    if image is None:
+    if file is None:
         return jsonify(dict(code=404,
                             message=LOCALE.not_found.FILE)), 404
 
-    # =========================================================
-    # - User isn't admin and isn't trying to delete their image
-    # - Both admin but user is not superuser
-    # =========================================================
-    if (not user.is_admin and user.user_id != image.owner_id) \
-       or (user.is_admin and image.owner.is_admin and user.user_id != image.owner_id and user.user_id != const.superuser.user_id):
+    if not user.is_admin:
         return jsonify(dict(code=403,
                             message=LOCALE.no_perms.FILE)), 403
 
-    os.remove(path=f"static/uploads/{filename}")
+    os.rename(src=f"archive/{filename}",
+              dst=f"static/uploads/{filename}")
 
     with pool.cursor() as con:
-        query = """DELETE FROM uploaded_images
+        query = """UPDATE uploaded_files
+                   SET deleted = false
                    WHERE discriminator = %(discrim)s;"""
 
         con.execute(query,
                     dict(discrim=filename))
 
-    cache.images.remove(image)
+    file.deleted = False
 
-    event = "IMAGE_DELETE"
+    cache.files[cache.files.index(file)] = file
 
-    if user.user_id != image.owner_id:
-        event = "FORCE_IMAGE_DELETE"
-
-    make_discord_log(event=event,
-                     user=image.owner.display_name,
+    make_discord_log(event="FILE_RESTORE",
+                     user=file.owner.display_name,
                      admin=user.display_name,
                      url=f"https://{request.url_root.lstrip('http://')}{filename}")
 
     return jsonify(dict(code=200,
-                        message=LOCALE.success.DELETE_IMAGE)), 200
+                        message=LOCALE.success.RESTORE_FILE)), 200
+
+@app.route(rule=BASE + "/delete/<filename>",
+           methods=["DELETE", "POST"])
+def delete_file(filename: str):
+    """Deletes a file with a given filename.
+    
+    This runs a check on the user's token to see if they're allowed to delete the file."""
+
+    user = check_user(token=request.headers.get("Authorization"))
+
+    if user is None:
+        return jsonify(dict(code=403,
+                            message=LOCALE.invalid.TOKEN)), 403
+
+    # ====================
+    # Check if file exists
+    # ====================
+    file = first(iterable=cache.files,
+                  condition=lambda file: file.discrim == filename)
+    
+    if file is None:
+        return jsonify(dict(code=404,
+                            message=LOCALE.not_found.FILE)), 404
+
+    # ========================================================
+    # - User isn't admin and isn't trying to delete their file
+    # - Both admin but user is not superuser
+    # ========================================================
+    if (not user.is_admin and user.user_id != file.owner_id) \
+       or (user.is_admin and file.owner.is_admin and user.user_id != file.owner_id and user.user_id != const.superuser.user_id):
+        return jsonify(dict(code=403,
+                            message=LOCALE.no_perms.FILE)), 403
+
+    event = "FILE_DELETE"
+
+    if user.user_id != file.owner_id:
+        event = "FORCE_FILE_DELETE"
+
+    if config.file_archive.enabled:
+        with pool.cursor() as con:
+            query = """UPDATE uploaded_files
+                       SET deleted = true
+                       WHERE discriminator = %(discrim)s;"""
+
+            con.execute(query,
+                        dict(discrim=filename))
+
+        os.replace(src=f"static/uploads/{filename}",
+                   dst=f"archive/{filename}")
+
+        file.deleted = True
+
+        cache.files[cache.files.index(file)] = file
+
+        make_discord_log(event=event,
+                        user=file.owner.display_name,
+                        admin=user.display_name,
+                        url=f"https://{request.url_root.lstrip('http://')}archive/{filename}")
+
+    else:
+        with pool.cursor() as con:
+            query = """DELETE FROM uploaded_files
+                       WHERE discriminator = %(discrim)s;"""
+
+            con.execute(query,
+                        dict(discrim=filename))
+
+        os.remove(path=f"static/uploads/{filename}")
+
+        cache.files.remove(file)
+
+        make_discord_log(event=event,
+                        user=file.owner.display_name,
+                        admin=user.display_name,
+                        url=f"https://{request.url_root.lstrip('http://')}{filename}")
+
+    return jsonify(dict(code=200,
+                        message=LOCALE.success.DELETE_FILE)), 200
 
 @app.route(rule=BASE + "/view/<filename>")
-@app.route(rule="/i/<filename>")
 @app.route(rule="/<filename>")
 def get_file(filename: str):
-    """Gets and returns an image if it exists."""
+    """Gets and returns an file if it exists."""
 
     path = f"static/uploads/{filename}"
 
     if not os.path.exists(path):
         abort(status=404)
 
+    file_type = filetype(filename=filename)
+    mimetype = "text/plaintext"
+
+    if file_type in ("image", "gif"):
+        mimetype = "image/gif"
+
+    elif file_type == "video":
+        mimetype = "video/mp4"
+
+    elif file_type == "audio":
+        mimetype = "audio/mp3"
+
     return send_file(filename_or_fp=path, 
-                     mimetype="image/gif"), 200
+                     mimetype=mimetype), 200
+
+@app.route(rule=BASE + "/view/archive/<filename>")
+@app.route(rule="/archive/<filename>")
+def get_archive(filename: str):
+    """Retrieves a file from the file archive if it exists.
+    
+    To allow admins to see the image from their Discord servers, a webhook token is used to allow Discord to fetch the image.
+    The token used must match the configuration for the webhook that receives FILE_DELETE events, since that's the event that sends the URL."""
+
+    token = request.args.get("token")
+    webhook = first(iterable=config.discord.webhooks,
+                    condition=lambda hook: hook.events in ("FORCE_FILE_DELETE", "FILE_DELETE"))
+
+    if None in (webhook, token):
+        user = check_user(token=request.cookies.get("_auth_token"))
+
+        if user is None:
+            return redirect(location="/api/login",
+                            code=303), 303
+
+        if not user.is_admin:
+            abort(status=403)
+
+    elif token != webhook.get("token"):
+        user = check_user(token=request.cookies.get("_auth_token"))
+
+        if user is None:
+            return redirect(location="/api/login",
+                            code=303), 303
+
+        if not user.is_admin:
+            abort(status=403)
+
+    path = f"archive/{filename}"
+
+    if not os.path.exists(path):
+        abort(status=404)
+
+    file_type = filetype(filename=filename)
+    mimetype = "text/plaintext"
+
+    if file_type in ("image", "gif"):
+        mimetype = "image/gif"
+
+    elif file_type == "video":
+        mimetype = "video/mp4"
+
+    elif file_type == "audio":
+        mimetype = "audio/mp3"
+
+    return send_file(filename_or_fp=path, 
+                     mimetype=mimetype), 200
 
 @app.route(rule=BASE + "/user/new",
            methods=["PUT", "POST"])
@@ -292,7 +434,7 @@ def new_user():
                            token=generate_token())
 
     with pool.cursor() as con:
-        query = """INSERT INTO image_users (username, password, display_name, admin, created_at, api_token)
+        query = """INSERT INTO imago_users (username, password, display_name, admin, created_at, api_token)
                    VALUES (%(username)s, %(password)s, %(display_name)s, %(admin)s, %(created_at)s, %(token)s)
                    
                    RETURNING id;"""
@@ -348,7 +490,7 @@ def delete_user():
                             message=LOCALE.no_perms.DELETE_USER)), 403
 
     with pool.cursor() as con:
-        query = """DELETE FROM image_users
+        query = """DELETE FROM imago_users
                    WHERE id = %(user_id)s;"""
 
         con.execute(query,
@@ -436,7 +578,7 @@ def edit_user():
     new_values.update(new_stuff)
 
     with pool.cursor() as con:
-        query = """UPDATE image_users
+        query = """UPDATE imago_users
                    SET username = %(username)s,
                    password = %(password)s,
                    display_name = %(display_name)s,
@@ -511,7 +653,7 @@ def reset_token():
     new_token = generate_token()
                       
     with pool.cursor() as con:
-        query = """UPDATE image_users
+        query = """UPDATE imago_users
                    SET api_token = %(token)s
                    WHERE id = %(user_id)s;"""
 

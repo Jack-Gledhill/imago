@@ -1,4 +1,4 @@
-function delete_image(discrim) {
+function delete_file(discrim) {
     swal({
         title: "Hold up!",
         text: "Are you sure you want to do this?",
@@ -40,7 +40,58 @@ function delete_image(discrim) {
   
                     swal({
                         title: "Unknown Error",
-                        text: "Sorry, an unknown error occurred when trying to delete that image. Please try again.",
+                        text: "Sorry, an unknown error occurred when trying to delete that file. Please try again.",
+                        icon: "error"
+                    });
+                  }
+              });
+        };
+    });
+};
+
+function restore_file(discrim) {
+    swal({
+        title: "Hold up!",
+        text: "Are you sure you want to do this?",
+        closeOnClickOutside: false,
+        closeOnEsc: false,
+        buttons: {
+          no: {
+              text: "Cancel",
+              value: "no"
+          },
+          yes: {
+              text: "Continue",
+              value: "yes",
+              closeModal: false
+          },
+      }
+    }).then((option) => {
+        switch (option) {
+            case "no":
+              swal.close();
+  
+              break;
+  
+            case "yes":
+              $.ajax({
+                  url: `/api/restore/${discrim}`,
+                  type: "POST",
+                  headers: {
+                      Authorization: getCookie("_auth_token")
+                  },
+                  success: function(res) {
+                      swal.close();
+  
+                      let element = document.getElementById(discrim);
+                      element.parentNode.removeChild(element);
+                  },
+                  error: function(res) {
+                      swal.close();
+  
+                    swal({
+                        title: "Unknown Error",
+                        text: "Sorry, an unknown error occurred when trying to restore that file. Please try again.",
                         icon: "error"
                     });
                   }

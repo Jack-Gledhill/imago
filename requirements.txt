@@ -5,6 +5,7 @@ honeybadger
 pillow
 Psycopg2
 pyfiglet
+python-crontab
 PyYAML
 requests
 termcolor

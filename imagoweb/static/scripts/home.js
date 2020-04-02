@@ -1,4 +1,4 @@
-function delete_image(discrim) {
+function delete_file(discrim) {
   swal({
       title: "Hold up!",
       text: "Are you sure you want to do this?",
@@ -40,7 +40,7 @@ function delete_image(discrim) {
 
                   swal({
                       title: "Unknown Error",
-                      text: "Sorry, an unknown error occurred when trying to delete that image. Please try again.",
+                      text: "Sorry, an unknown error occurred when trying to delete that file. Please try again.",
                       icon: "error"
                   });
                 }

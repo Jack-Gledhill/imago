@@ -4,6 +4,8 @@
 # ------------------------
 # Third-party dependencies
 # ------------------------
+import os
+
 from flask import abort, jsonify, render_template, request, redirect
 from datetime import datetime
 
@@ -35,10 +37,10 @@ def users_page():
                            superuser=user.api_token == const.superuser.api_token,
                            users=cache.users)
 
-@app.route(rule="/admin/images")
-@app.route(rule="/home/admin/images")
-def gallery_page():
-    """This displays the images section of the admin panel."""
+@app.route(rule="/admin/files")
+@app.route(rule="/home/admin/files")
+def file_gallery():
+    """This displays the files section of the admin panel."""
 
     user = check_user(token=request.cookies.get("_auth_token"))
 
@@ -49,11 +51,35 @@ def gallery_page():
     if not user.is_admin:
         abort(status=403)
 
-    return render_template(template_name_or_list="admin/images.html",
+    return render_template(template_name_or_list="admin/files.html",
                            user=user,
                            superuser_id=const.superuser.user_id,
                            superuser=user.api_token == const.superuser.api_token,
-                           images=cache.images)
+                           files=all(iterable=cache.files,
+                                     condition=lambda file: not file.deleted))
+
+@app.route(rule="/admin/archive")
+@app.route(rule="/home/admin/archive")
+def file_archive():
+    """This displays all of the archived files. 
+    
+    Files are archived for the rest of the day when they are deleted by either the owner or an admin.
+    They are then moved to separate, admin-only folder where admins can temporarily view then until they're
+    permanently removed by a cronjob at midnight every day according to the host machine's local time."""
+
+    user = check_user(token=request.cookies.get("_auth_token"))
+
+    if user is None:
+        return redirect(location="/api/login",
+                        code=303), 303
+
+    if not user.is_admin:
+        abort(status=403)
+
+    return render_template(template_name_or_list="admin/archive.html",
+                           user=user,
+                           files=all(iterable=cache.files,
+                                     condition=lambda file: file.deleted and os.path.exists(f"archive/{file.discrim}")))
 
 @app.route(rule="/new")
 @app.route(rule="/home/admin/new")

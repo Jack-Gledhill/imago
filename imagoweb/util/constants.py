@@ -54,8 +54,8 @@ locales = {
 }
 
 cache = namedtuple(typename="cache", 
-                   field_names="images, users")(images=[], 
-                                                users=[const.superuser])
+                   field_names="files, users")(files=[], 
+                                               users=[const.superuser])
 
 epoch = datetime(year=2000,
                  month=1,
