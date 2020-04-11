@@ -32,3 +32,17 @@ class upload(blueprint):
         self.created_at_friendly = self.created_at.strftime("%d/%m/%Y %H:%M")
 
         self.owner = upload_data.pop("owner")
+
+class url(blueprint):
+    def __init__(self,
+                 **url_data: dict):
+        self.url_id = url_data.pop("id")
+        self.discrim = url_data.pop("discrim")
+        self.url = url_data.pop("url")
+
+        self.owner_id = url_data.pop("owner_id")
+        self.created_at = url_data.pop("created_at")
+
+        self.created_at_friendly = self.created_at.strftime("%d/%m/%Y %H:%M")
+
+        self.owner = url_data.pop("owner")

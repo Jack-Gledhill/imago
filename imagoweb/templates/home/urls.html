@@ -1,0 +1,29 @@
+{% extends "home/base.html" %}
+
+{% block body_content %}
+    <div class="side-container">
+        <table class="side-table">
+            <tr>
+                <th>{{ locale.home.tables.URL_ID }}</th>
+                <th>{{ locale.home.tables.DISCRIMINATOR }}</th>
+                <th>{{ locale.admin.tables.LINKS_TO }}</th>
+                <th>{{ locale.home.tables.UPLOAD_DATE }}</th>
+                <th>{{ locale.home.tables.ACTIONS }}</th>
+            </tr>
+            {% for u in urls %}
+                <tr id="{{ u.discrim }}">
+                    <td>{{ u.url_id }}</td>
+                    <td><a href="/u/{{ u.discrim }}" target="_blank">{{ u.discrim }}</a></td>
+                    <td><a href="{{ u.url }}" target="_blank">{{ textwrap.shorten(u.url, width=100, placeholder="...") }}</a></td>
+                    <td>{{ u.created_at_friendly }}</td>
+                    <td>
+                        <button class="action-button red-button tooltip" onclick="delete_url('{{ u.discrim }}')">
+                            <i class="fas fa-trash"></i>
+                            <span class="tooltiptext">{{ locale.home.buttons.DELETE_URL }}</span>
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

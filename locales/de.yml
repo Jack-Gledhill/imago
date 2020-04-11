@@ -6,70 +6,80 @@ api:
     invalid:
         FILETYPE: Invalid file type.
         USER: Invalid user ID.
-        TOKEN: Invalid or missing authorisation token.
-        PASSWORD: Huidig wachtwoord is not correct.
-        USERNAME_TAKEN: Gebruikersnaam is already taken.
+        URL: That URL is invalid.
+        URL_EXISTS: That URL has already been shortened.
+        TOKEN: Invalid or missing authorization token.
+        PASSWORD: Password is not correct.
+        USERNAME_TAKEN: Username is already taken.
 
     not_found:
-        USER: Gebruiker not found.
+        USER: User not found.
         FILE: File not found.
+        URL: URL not found.
 
     no_perms:
         FILE: You do not own this file.
-        CREATE_USER: You're not authorised to create users.
-        EDIT_USER: You're not authorised to edit this account.
-        DELETE_USER: You're not authorised to delete users.
-        TOKEN_RESET: You're not authorised to reset this account's token.
-        CREATE_ADMIN: You're not authorised to create Administrator users, please pass admin as false.
+        URL: You do not own this URL.
+        CREATE_USER: You're not authorized to create users.
+        EDIT_USER: You're not authorized to edit this account.
+        DELETE_USER: You're not authorized to delete users.
+        TOKEN_RESET: You're not authorized to reset this account's token.
+        CREATE_ADMIN: You're not authorized to create Administrator users, please pass admin as false.
 
     success:
-        DELETE_FILE: Afbeelding deleted successfully.
+        DELETE_FILE: File deleted successfully.
+        DELETE_URL: URL deleted successfully.
         RESTORE_FILE: That file has been restored.
-        PASSWORD: Huidig wachtwoord is correct.
-        CREATE_USER: Gebruiker was successfully created.
-        DELETE_USER: Gebruiker was successfully deleted.
-        EDIT_USER: Gebruiker was successfully edited.
-        TOKEN_RESET: Gebruiker API token was successfully reset.
+        PASSWORD: Password is correct.
+        CREATE_USER: User was successfully created.
+        DELETE_USER: User was successfully deleted.
+        EDIT_USER: User was successfully edited.
+        TOKEN_RESET: User API token was successfully reset.
 
 admin:
-    TITLE: Imago - Administratie Paneel
+    TITLE: Imago - Admin Panel
 
     nav:
-        PROJECT_TITLE: Ontwerpen Imago
-        USERS: Gebruikers
-        FILES: Afbeeldingen
+        PROJECT_TITLE: Project Imago
+        USERS: Users
+        FILES: Files
         ARCHIVE: Archive
+        URLS: URLs
 
     form:
-        USERNAME: GEBRUIKERSNAAM
-        PASSWORD: HUIDIG WACHTWOORD
-        DISPLAY_NAME: WEERGAVENAAM
+        USERNAME: USERNAME
+        PASSWORD: PASSWORD
+        DISPLAY_NAME: DISPLAY NAME
         GRANT_ADMIN: Grant Administrator permissions
 
     tables:
-        FILE_ID: Afbeelding ID
+        FILE_ID: File ID
+        URL_ID: URL ID
         DISCRIMINATOR: Discriminator
+        LINKS_TO: Links To
         AUTHOR: Author
         UPLOAD_DATE: Upload Date
 
-        USER_ID: Gebruiker ID
-        USERNAME: Gebruikersnaam
-        DISPLAY_NAME: Weergavenaam
-        ADMINISTRATOR: Beheerder
+        USER_ID: User ID
+        USERNAME: Username
+        DISPLAY_NAME: Display Name
+        ADMINISTRATOR: Administrator
 
-        ACTIONS: Acties
+        ACTIONS: Actions
         NO_FILE_ACTIONS: No actions available for this file.
         NO_USER_ACTIONS: No actions available for this user.
+        NO_URL_ACTIONS: No actions available for this URL.
 
     buttons:
-        EDIT_USER: Bewerken User
+        EDIT_USER: Edit User
         DELETE_FILE: Delete File
+        DELETE_URL: Delete URL
         RESTORE_FILE: Restore File
         CREATE_USER: Create User
 
         TOGGLE_ADMIN: Toggle Administrator
         RESET_TOKEN: Reset API token
-        EDIT_ACCOUNT: Bewerken Account
+        EDIT_ACCOUNT: Edit Account
         DELETE_ACCOUNT: Delete Account
 
 errors:
@@ -116,37 +126,41 @@ home:
     nav:
         PROJECT_TITLE: Project Imago
         ACCOUNT: Account
-        FILES: Afbeeldingen
+        FILES: Files
+        URLS: URLs
 
     form:
-        USERNAME: GEBRUIKERSNAAM
-        NEW_PASSWORD: NIEUW HUIDIG WACHTWOORD
-        CONFIRM_PASSWORD: CONFIRM HUIDIG WACHTWOORD
-        DISPLAY_NAME: WEERGAVENAAM
+        USERNAME: USERNAME
+        PASSWORD: PASSWORD
+        NEW_PASSWORD: NEW PASSWORD
+        CONFIRM_PASSWORD: CONFIRM PASSWORD
+        DISPLAY_NAME: DISPLAY NAME
         API_TOKEN: API TOKEN
 
     tables:
-        FILE_ID: Afbeelding ID
+        FILE_ID: File ID
+        URL_ID: URL ID
         DISCRIMINATOR: Discriminator
         UPLOAD_DATE: Upload Date
-        ACTIONS: Acties
+        ACTIONS: Actions
 
     buttons:
-        COPY_TOKEN: Kopiëren
-        REGEN_TOKEN: Verversen
+        COPY_TOKEN: Copy
+        REGEN_TOKEN: Renew
         SAVE_CHANGES: Save Changes
-        DELETE_FILE: Delete Afbeelding
+        DELETE_FILE: Delete File
+        DELETE_URL: Delete URL
 
 login:
-    TITLE: Imago - Inloggen
+    TITLE: Imago - Login
 
     form:
         INVALID_CREDS: An invalid username or password was provided.
-        USERNAME: GEBRUIKERSNAAM
-        PASSWORD: HUIDIG WACHTWOORD
+        USERNAME: USERNAME
+        PASSWORD: PASSWORD
 
     buttons:
-        LOGIN: Inloggen
+        LOGIN: Login
 
 base:
     TITLE: Imago

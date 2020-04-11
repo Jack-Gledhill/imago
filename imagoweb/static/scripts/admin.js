@@ -49,6 +49,57 @@ function delete_file(discrim) {
     });
 };
 
+function delete_url(discrim) {
+    swal({
+        title: "Hold up!",
+        text: "Are you sure you want to do this?",
+        closeOnClickOutside: false,
+        closeOnEsc: false,
+        buttons: {
+          no: {
+              text: "Cancel",
+              value: "no"
+          },
+          yes: {
+              text: "Continue",
+              value: "yes",
+              closeModal: false
+          },
+      }
+    }).then((option) => {
+        switch (option) {
+            case "no":
+              swal.close();
+  
+              break;
+  
+            case "yes":
+              $.ajax({
+                  url: `/api/delete/u/${discrim}`,
+                  type: "DELETE",
+                  headers: {
+                      Authorization: getCookie("_auth_token")
+                  },
+                  success: function(res) {
+                      swal.close();
+  
+                      let element = document.getElementById(discrim);
+                      element.parentNode.removeChild(element);
+                  },
+                  error: function(res) {
+                      swal.close();
+  
+                    swal({
+                        title: "Unknown Error",
+                        text: "Sorry, an unknown error occurred when trying to delete that URL. Please try again.",
+                        icon: "error"
+                    });
+                  }
+              });
+        };
+    });
+};
+
 function restore_file(discrim) {
     swal({
         title: "Hold up!",

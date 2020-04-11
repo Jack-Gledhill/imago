@@ -17,6 +17,12 @@ file_optimisation:
     admin_bypass:
         can_bypass: yes
         by_default: no
+        header: Compression-Bypass
+
+url_shortening:
+    custom_url:
+        admin_only: yes
+        header: URL-Name
 
 allowed_extensions:
     png: image
@@ -40,7 +46,8 @@ logging:
     level: INFO
 
 generator:
-    filename: 8
+    files: 8
+    urls: 3
     token: 56
 
 figlet: 
@@ -49,9 +56,9 @@ figlet:
     font: standard
 
 version:
-    major: 2
-    minor: 1
-    patch: 0
+    major: 3
+    minor: 2
+    patch: 1
     release: stable
 
 # ================
@@ -76,6 +83,8 @@ discord:
           events:
             - IMAGE_DELETE # image deleted by its owner
             - IMAGE_UPLOAD # image uploaded
+            - URL_SHORTEN # url shortened
+            - URL_DELETE # shortened url deleted
             - USER_EDIT # user has edited their account
             - USER_TOKEN_RESET # user has reset their token
 
@@ -87,6 +96,7 @@ discord:
             - FORCE_USER_DELETE # admin deleted a user by force
             - FORCE_USER_TOKEN_RESET # admin reset a user's token by force
             - FORCE_IMAGE_DELETE # admin deleted an image by force
+            - FORCE_URL_DELETE # admin deleted a shortened url
             - ADMIN_TOGGLE_ON # superuser made a user admin
             - ADMIN_TOGGLE_OFF # superuser removed admin from a user
 

@@ -32,7 +32,7 @@ def account_page():
 @app.route(rule="/files")
 @app.route(rule="/home/files")
 def files_page():
-    """Displays a table of the users files."""
+    """Displays a table of the user's files."""
 
     user = check_user(token=request.cookies.get("_auth_token"))
 
@@ -44,3 +44,19 @@ def files_page():
                            user=user,
                            files=all(iterable=cache.files,
                                      condition=lambda file: file.owner_id == user.user_id and not file.deleted))
+
+@app.route(rule="/urls")
+@app.route(rule="/home/urls")
+def shortened_urls():
+    """Displays a table of the user's shortened URLs."""
+
+    user = check_user(token=request.cookies.get("_auth_token"))
+
+    if user is None:
+        return redirect(location="/api/login",
+                        code=303), 303
+
+    return render_template(template_name_or_list="home/urls.html",
+                           user=user,
+                           urls=all(iterable=cache.urls,
+                                    condition=lambda url: url.owner_id == user.user_id))

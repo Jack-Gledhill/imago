@@ -35,7 +35,7 @@ sys.path.append("..")
 
 from imagoweb.util import console, constants
 from imagoweb.util.constants import cache, config
-from imagoweb.util.blueprints import upload, user
+from imagoweb.util.blueprints import upload, url, user
 
 # ==============================
 # Check for missing dependencies
@@ -181,7 +181,8 @@ class Imago:
             # Ensure dependant db tables exist
             # ================================
             queries = ("""CREATE TABLE IF NOT EXISTS imago_users (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT, display_name TEXT, admin BOOLEAN, created_at TIMESTAMP, api_token TEXT);""",
-                       """CREATE TABLE IF NOT EXISTS uploaded_files (id SERIAL PRIMARY KEY, owner_id INT, discriminator TEXT UNIQUE, created_at TIMESTAMP, deleted BOOLEAN);""")
+                       """CREATE TABLE IF NOT EXISTS uploaded_files (id SERIAL PRIMARY KEY, owner_id INT, discriminator TEXT UNIQUE, created_at TIMESTAMP, deleted BOOLEAN);""",
+                       """CREATE TABLE IF NOT EXISTS shortened_urls (id SERIAL PRIMARY KEY, owner_id INT, discriminator TEXT UNIQUE, url TEXT, created_at TIMESTAMP)""")
 
             for query in queries:
                 con.execute(query)
@@ -225,6 +226,21 @@ class Imago:
                                           owner=first(iterable=cache.users,
                                                       condition=lambda user: user.user_id == file[1])))
 
+            query = """SELECT id, owner_id, discriminator, url, created_at
+                       FROM shortened_urls
+                       ORDER BY created_at DESC;"""
+
+            con.execute(query)
+
+            for shortened_url in con.fetchall():
+                cache.urls.append(url(id=shortened_url[0],
+                                      owner_id=shortened_url[1],
+                                      discrim=shortened_url[2],
+                                      url=shortened_url[3],
+                                      created_at=shortened_url[4],
+                                      owner=first(iterable=cache.users,
+                                                  condition=lambda user: user.user_id == shortened_url[1])))
+
         console.info(text=f"Server started at: http://{host}:{port}")
 
         # ==================
@@ -245,8 +261,8 @@ class Imago:
         # =================
         if config.file_archive.enabled:
             command = {
-                "Windows": 'del /S /Q archive',
-                "Linux": 'rm -rf archive/*'
+                "Windows": "del /S /Q {cwd}/archive",
+                "Linux": "rm -rf {cwd}/archive/*"
             }.get(platform.system())
 
             if command is None:
@@ -259,7 +275,7 @@ class Imago:
             if previous_cron:
                 crontab.remove(previous_cron)
 
-            job = crontab.new(command=command,
+            job = crontab.new(command=command.format(cwd=os.path.dirname(os.path.realpath(__file__))),
                               comment="imago-archive")
             job.minute.on(0)
             job.hour.on(0)

@@ -4,7 +4,7 @@
 # -----------------
 # Builtin libraries
 # -----------------
-import os
+import os, re
 
 from datetime import datetime
 
@@ -17,11 +17,16 @@ from flask import abort, make_response, render_template, request, redirect, json
 # Import local libraries
 # ======================
 from imagoweb.util.constants import app, cache, config, const, epoch, locales, pool
-from imagoweb.util.utilities import filetype, bypass_optimise, check_user, first, generate_discrim, generate_token, get_user, make_discord_log, optimise_image
-from imagoweb.util.blueprints import upload, user
+from imagoweb.util.utilities import bypass_optimise, check_user, filetype, filext, first, generate_discrim, generate_token, get_user, make_discord_log, optimise_image
+from imagoweb.util.blueprints import upload, url, user
 
 BASE = "/api"
 LOCALE = locales.get(config.default_locale).api
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+# courtesy of urlregex.com
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+URL_REGEX = r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 
 app.config["MAX_IMAGE_FILESIZE"] = config.max_file_size.megabytes * 1024**2 + \
                                    config.max_file_size.kilobytes * 1024
@@ -112,6 +117,75 @@ def login():
     return redirect(location="/home",
                     code=303), 303
 
+@app.route(rule=BASE + "/shorten",
+           methods=["POST"])
+def shorten_url():
+    """Takes a URL and shortens it. This is useful for particularly long URLs like Google Form links."""
+
+    user = check_user(token=request.headers.get("Authorization"))
+
+    if user is None:
+        return jsonify(dict(code=403,
+                            message=LOCALE.invalid.TOKEN)), 403
+
+    if not request.is_json:
+        return jsonify(dict(code=403,
+                            message=LOCALE.missing.JSON)), 403
+
+    to_shorten = request.json.get("url")
+
+    if to_shorten is None:
+        return jsonify(dict(code=403,
+                            message=LOCALE.missing.JSON)), 403
+
+    found_url = first(iterable=cache.urls,
+                      condition=lambda url: url.url == to_shorten)
+
+    if found_url:
+        return jsonify(dict(code=403,
+                            message=LOCALE.invalid.URL_EXISTS,
+                            link=f"https://{request.url_root.lstrip('http://')}u/{found_url.discrim}")), 403
+
+    if re.match(pattern=URL_REGEX,
+                string=to_shorten) is None:
+        return jsonify(dict(code=403,
+                            message=LOCALE.invalid.URL)), 403
+
+    discriminator = request.headers.get(config.url_shortening.custom_url.header)
+
+    if not (user.is_admin and config.url_shortening.custom_url.admin_only) or not discriminator:
+        discriminator = generate_discrim(cache_obj="urls")
+
+    with pool.cursor() as con:
+        query = """INSERT INTO shortened_urls (owner_id, discriminator, url, created_at)
+                   VALUES (%(owner_id)s, %(discrim)s, %(url)s, %(created_at)s)
+                   
+                   RETURNING id;"""
+
+        con.execute(query,
+                    dict(owner_id=user.user_id,
+                         discrim=discriminator,
+                         url=to_shorten,
+                         created_at=datetime.utcnow()))
+
+        url_id = con.fetchone()[0]
+
+        cache.urls.insert(0, url(id=url_id,
+                                 owner_id=user.user_id,
+                                 discrim=discriminator,
+                                 url=to_shorten,
+                                 created_at=datetime.utcnow(),
+                                 owner=user))
+
+    return_url = f"https://{request.url_root.lstrip('http://')}u/{discriminator}"
+
+    make_discord_log(event="URL_SHORTEN",
+                     user=user.display_name,
+                     url=return_url,
+                     link=to_shorten)
+
+    return return_url, 200
+
 @app.route(rule=BASE + "/upload",
            methods=["POST"])
 def upload_file():
@@ -139,7 +213,7 @@ def upload_file():
 
     file.save(f"static/uploads/{discriminator}")
 
-    if file_type == "image" and not bypass_optimise(header=request.headers.get("Compression-Bypass"),
+    if file_type == "image" and not bypass_optimise(header=request.headers.get(config.file_optimisation.admin_bypass.header),
                                                     user=user):
         optimise_image(discriminator=discriminator)
 
@@ -167,7 +241,7 @@ def upload_file():
                                      owner=user,
                                      deleted=False))
 
-    url = f"https://{request.url_root.lstrip('http://')}{discriminator}"
+    url = f"https://{request.url_root.lstrip('http://')}{'f' if file_type != 'image' else 'i'}/{discriminator}"
 
     make_discord_log(event="FILE_UPLOAD",
                      user=user.display_name,
@@ -226,7 +300,61 @@ def restore_file(filename: str):
     return jsonify(dict(code=200,
                         message=LOCALE.success.RESTORE_FILE)), 200
 
-@app.route(rule=BASE + "/delete/<filename>",
+@app.route(rule=BASE + "/delete/u/<url_discrim>",
+           methods=["DELETE", "POST"])
+def delete_url(url_discrim: str):
+    """Deletes a URL with a given discriminator.
+    
+    This runs a check on the user's token to see if they're allowed to delete the file."""
+
+    user = check_user(token=request.headers.get("Authorization"))
+
+    if user is None:
+        return jsonify(dict(code=403,
+                            message=LOCALE.invalid.TOKEN)), 403
+
+    # ===================
+    # Check if URL exists
+    # ===================
+    found_url = first(iterable=cache.urls,
+                      condition=lambda url: url.discrim == url_discrim)
+    
+    if found_url is None:
+        return jsonify(dict(code=404,
+                            message=LOCALE.not_found.URL)), 404
+
+    # ========================================================
+    # - User isn't admin and isn't trying to delete their file
+    # - Both admin but user is not superuser
+    # ========================================================
+    if (not user.is_admin and user.user_id != found_url.owner_id) \
+       or (user.is_admin and found_url.owner.is_admin and user.user_id != found_url.owner_id and user.user_id != const.superuser.user_id):
+        return jsonify(dict(code=403,
+                            message=LOCALE.no_perms.URL)), 403
+
+    event = "URL_DELETE"
+
+    if user.user_id != found_url.owner_id:
+        event = "FORCE_URL_DELETE"
+
+    with pool.cursor() as con:
+        query = """DELETE FROM shortened_urls
+                    WHERE discriminator = %(discrim)s;"""
+
+        con.execute(query,
+                    dict(discrim=url_discrim))
+
+    cache.urls.remove(found_url)
+
+    make_discord_log(event=event,
+                     user=found_url.owner.display_name,
+                     admin=user.display_name,
+                     link=found_url.url)
+
+    return jsonify(dict(code=200,
+                        message=LOCALE.success.DELETE_URL)), 200
+
+@app.route(rule=BASE + "/delete/f/<filename>",
            methods=["DELETE", "POST"])
 def delete_file(filename: str):
     """Deletes a file with a given filename.
@@ -304,8 +432,23 @@ def delete_file(filename: str):
     return jsonify(dict(code=200,
                         message=LOCALE.success.DELETE_FILE)), 200
 
-@app.route(rule=BASE + "/view/<filename>")
-@app.route(rule="/<filename>")
+@app.route(rule=BASE + "/u/<link>")
+@app.route(rule="/u/<link>")
+def get_link(link: str):
+    """Redirects a user to a shortened URL if it exists."""
+
+    found_url = first(iterable=cache.urls,
+                      condition=lambda url: url.discrim == link)
+
+    if found_url is None:
+        abort(status=404)
+
+    return redirect(location=found_url.url,
+                    code=303), 303
+
+@app.route(rule=BASE + "/f/<filename>")
+@app.route(rule="/f/<filename>")
+@app.route(rule="/i/<filename>")
 def get_file(filename: str):
     """Gets and returns an file if it exists."""
 
@@ -315,19 +458,20 @@ def get_file(filename: str):
         abort(status=404)
 
     file_type = filetype(filename=filename)
+    file_extension = filext(filename=filename)
     mimetype = "text/plaintext"
 
     if file_type in ("image", "gif"):
-        mimetype = "image/gif"
+        mimetype = "image/{ft}"
 
     elif file_type == "video":
-        mimetype = "video/mp4"
+        mimetype = "video/{ft}"
 
     elif file_type == "audio":
-        mimetype = "audio/mp3"
+        mimetype = "audio/{ft}"
 
     return send_file(filename_or_fp=path, 
-                     mimetype=mimetype), 200
+                     mimetype=mimetype.format(ft=file_extension)), 200
 
 @app.route(rule=BASE + "/view/archive/<filename>")
 @app.route(rule="/archive/<filename>")

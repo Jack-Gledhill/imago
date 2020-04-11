@@ -29,6 +29,9 @@ DISCORD_LOG_FORMATS = {
     "FILE_UPLOAD": ":inbox_tray: {user} uploaded a file:\n{url}",
     "FILE_RESTORE": ":link: {admin} restored a file by {user}:\n{url}",
 
+    "URL_SHORTEN": ":link: {user} shortened a URL at {url}:\n{link}",
+    "URL_DELETE": ":wastebasket: {user} deleted a shortened URL:\n{link}",
+
     "USER_EDIT": ":pencil: {user} edited their account.",
     "USER_TOKEN_RESET": ":closed_lock_with_key: {user} reset their account token.",
 
@@ -37,6 +40,7 @@ DISCORD_LOG_FORMATS = {
     "FORCE_USER_DELETE": ":wastebasket: {user} was deleted by {admin}.",
     "FORCE_USER_TOKEN_RESET": ":closed_lock_with_key: {user} had their token reset by {admin}.",
     "FORCE_FILE_DELETE": ":wastebasket: {admin} deleted a file by {user}:\n{url}?token={hook_token}",
+    "FORCE_URL_DELETE": ":wastebasket: {admin} deleted a shortened URL by {user}:\n{link}",
 
     "ADMIN_TOGGLE_ON": ":lock: {admin} made {user} an Administrator.",
     "ADMIN_TOGGLE_OFF": ":unlock: {admin} removed Administrator from {user}."
@@ -74,19 +78,19 @@ def check_user(token: Union[str, int, None]) -> Union[user, None]:
 
     return get_user(token_or_id=token)
 
-def generate_discrim():
+def generate_discrim(cache_obj="files"):
     """This generates a unique, available discriminator for an uploaded file."""
 
     # ====================
     # Generate the discrim
     # ====================
-    discrim = "".join(choice(ascii_letters + digits) for i in range(config.generator.filename))
+    discrim = "".join(choice(ascii_letters + digits) for i in range(config.generator.get(cache_obj)))
 
     # ====================================
     # Check to see if discrim is available
     # ====================================
-    while discrim in [file.discrim for file in cache.files]:
-        discrim = "".join(choice(ascii_letters + digits) for i in range(config.generator.filename))
+    while discrim in [item.discrim for item in getattr(cache, cache_obj)]:
+        discrim = "".join(choice(ascii_letters + digits) for i in range(config.generator.get(cache_obj)))
         
     return discrim
 
@@ -108,12 +112,20 @@ def generate_token():
         
     return token
 
-def filetype(filename: str):
+def filetype(filename: str) -> Union[str, bool]:
     """This checks to see if the extension of the provided filename is legal according to the configuration file.
     
     If allowed, the extension type (e.g: image/audio) is returned. Otherwise False is returned."""
 
-    return config.allowed_extensions.get("." in filename and filename.rsplit(".", 1)[1].lower(), False)
+    return config.allowed_extensions.get(filext(filename=filename), False)
+
+def filext(filename: str) -> Union[str, None]:
+    """This grabs the extension of a filename. This is used to guess the MIMEtype of a file when sending it to the client."""
+
+    if not "." in filename:
+        return None
+
+    return filename.rsplit(".", 1)[1].lower()
 
 def first(iterable: Iterable[Any],
           condition: Callable) -> Any:

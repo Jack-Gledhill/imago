@@ -1,6 +1,6 @@
 # Imago - An MSG Image Server
 
-Imago is the webserver that the MSG Staff use to serve content at https://cdn.mila-software.group. The server was designed to allow ShareX users to easily and securely upload their screenshots to a fast, well-designed and efficient server.
+Imago is the webserver that the MSG Staff use to serve content at https://imagocdn.com. The server was designed to allow ShareX users to easily and securely upload their screenshots to a fast, well-designed and efficient server.
 
 ## Features
 
@@ -9,6 +9,7 @@ Here's what you can expect from Imago once you install it on your machine and ge
 - well-designed dashboard
 - plenty of configuration options
 - efficient file upload and storage
+- url shortening
 - admin options for user and upload control
 - secure token authorization
 - optional Discord webhook logging
@@ -29,11 +30,13 @@ You can change the resolution of an image by changing the quality option. A lowe
 
 ### Admin bypass
 
-Administrators can be allowed to bypass compression with a number of options. You can allow them to bypass this by setting the can_bypass option to `yes`. If this is done, you can also choose whether or not admins need to pass a specific header in their request to bypass compression. If compression is not bypassed for admins by default then they need to pass a `Compression-Bypass` header with any True content (something other than an empty string).
+Administrators can be allowed to bypass compression with a number of options. You can allow them to bypass this by setting the can_bypass option to `yes`. If this is done, you can also choose whether or not admins need to pass a specific header in their request to bypass compression. If compression is not bypassed for admins by default then they need to pass a header - set in the config file - with any True content (something other than an empty string).
 
 ## Example ShareX Configuration
 
 At first, configuring ShareX may not seem like a simple task. So here's an example for you:
+
+### Image or file uploads
 
 Field | Value
 ----- | -----
@@ -41,6 +44,16 @@ URL | https://example.com/api/upload
 Method | POST
 Body | Form data (multipart/form-data)
 File form name | `upload`
+Headers (key: value) | Authorization: your api token
+
+### URL shortening
+
+Field | Value
+----- | -----
+URL | https://example.com/api/shorten
+Method | POST
+Body | JSON (application/json)
+Body content | {"url": "$input$"}
 Headers (key: value) | Authorization: your api token
 
 ## Installation

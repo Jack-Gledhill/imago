@@ -6,6 +6,8 @@ api:
     invalid:
         FILETYPE: Invalid file type.
         USER: Invalid user ID.
+        URL: That URL is invalid.
+        URL_EXISTS: That URL has already been shortened.
         TOKEN: Invalid or missing authorization token.
         PASSWORD: Password is not correct.
         USERNAME_TAKEN: Username is already taken.
@@ -13,9 +15,11 @@ api:
     not_found:
         USER: User not found.
         FILE: File not found.
+        URL: URL not found.
 
     no_perms:
         FILE: You do not own this file.
+        URL: You do not own this URL.
         CREATE_USER: You're not authorized to create users.
         EDIT_USER: You're not authorized to edit this account.
         DELETE_USER: You're not authorized to delete users.
@@ -24,6 +28,7 @@ api:
 
     success:
         DELETE_FILE: File deleted successfully.
+        DELETE_URL: URL deleted successfully.
         RESTORE_FILE: That file has been restored.
         PASSWORD: Password is correct.
         CREATE_USER: User was successfully created.
@@ -39,6 +44,7 @@ admin:
         USERS: Users
         FILES: Files
         ARCHIVE: Archive
+        URLS: URLs
 
     form:
         USERNAME: USERNAME
@@ -48,7 +54,9 @@ admin:
 
     tables:
         FILE_ID: File ID
+        URL_ID: URL ID
         DISCRIMINATOR: Discriminator
+        LINKS_TO: Links To
         AUTHOR: Author
         UPLOAD_DATE: Upload Date
 
@@ -60,10 +68,12 @@ admin:
         ACTIONS: Actions
         NO_FILE_ACTIONS: No actions available for this file.
         NO_USER_ACTIONS: No actions available for this user.
+        NO_URL_ACTIONS: No actions available for this URL.
 
     buttons:
         EDIT_USER: Edit User
         DELETE_FILE: Delete File
+        DELETE_URL: Delete URL
         RESTORE_FILE: Restore File
         CREATE_USER: Create User
 
@@ -117,6 +127,7 @@ home:
         PROJECT_TITLE: Project Imago
         ACCOUNT: Account
         FILES: Files
+        URLS: URLs
 
     form:
         USERNAME: USERNAME
@@ -128,6 +139,7 @@ home:
 
     tables:
         FILE_ID: File ID
+        URL_ID: URL ID
         DISCRIMINATOR: Discriminator
         UPLOAD_DATE: Upload Date
         ACTIONS: Actions
@@ -137,6 +149,7 @@ home:
         REGEN_TOKEN: Renew
         SAVE_CHANGES: Save Changes
         DELETE_FILE: Delete File
+        DELETE_URL: Delete URL
 
 login:
     TITLE: Imago - Login

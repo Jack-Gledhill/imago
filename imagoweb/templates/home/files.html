@@ -12,7 +12,7 @@
             {% for i in files %}
                 <tr id="{{ i.discrim }}">
                     <td>{{ i.file_id }}</td>
-                    <td><a href="{{ url_for('static', filename='uploads/' + i.discrim) }}">{{ i.discrim }}</a></td>
+                    <td><a href="{{ url_for('static', filename='uploads/' + i.discrim) }}" target="_blank">{{ i.discrim }}</a></td>
                     <td>{{ i.created_at_friendly }}</td>
                     <td>
                         <button class="action-button red-button tooltip" onclick="delete_file('{{ i.discrim }}')">

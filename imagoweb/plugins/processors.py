@@ -1,6 +1,11 @@
 # ========================
 # Import PATH dependencies
 # ========================
+# --------------------
+# Builtin dependencies
+# --------------------
+import textwrap
+
 # ------------------------
 # Third-party dependencies
 # ------------------------
@@ -18,4 +23,5 @@ def inject_globals():
     Effectively, this means that every page can easily access the user variable."""
 
     return dict(version=dict(const.version),
-                locale=locales.get(config.default_locale))
+                locale=locales.get(config.default_locale),
+                textwrap=textwrap)

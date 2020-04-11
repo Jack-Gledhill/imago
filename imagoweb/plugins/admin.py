@@ -1,13 +1,17 @@
 # ========================
 # Import PATH dependencies
 # ========================
+# --------------------
+# Builtin dependencies
+# --------------------
+import os
+
+from datetime import datetime
+
 # ------------------------
 # Third-party dependencies
 # ------------------------
-import os
-
 from flask import abort, jsonify, render_template, request, redirect
-from datetime import datetime
 
 # ======================
 # Import local libraries
@@ -57,6 +61,26 @@ def file_gallery():
                            superuser=user.api_token == const.superuser.api_token,
                            files=all(iterable=cache.files,
                                      condition=lambda file: not file.deleted))
+
+@app.route(rule="/admin/urls")
+@app.route(rule="/home/admin/urls")
+def url_list():
+    """This displays the shortened URLs section of the admin panel."""
+
+    user = check_user(token=request.cookies.get("_auth_token"))
+
+    if user is None:
+        return redirect(location="/api/login",
+                        code=303), 303
+
+    if not user.is_admin:
+        abort(status=403)
+
+    return render_template(template_name_or_list="admin/urls.html",
+                           user=user,
+                           superuser_id=const.superuser.user_id,
+                           superuser=user.api_token == const.superuser.api_token,
+                           urls=cache.urls)
 
 @app.route(rule="/admin/archive")
 @app.route(rule="/home/admin/archive")
