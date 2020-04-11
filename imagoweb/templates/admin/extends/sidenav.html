@@ -1,6 +1,6 @@
 <div class="sidenav">
-    <a class="sidenav-item" href="/home/admin"><i class="fas fa-user"></i> &nbsp;&nbsp;{{ locale.admin.nav.USERS }}</a>
-    <a class="sidenav-item" href="/home/admin/files"><i class="fas fa-file-alt"></i> &nbsp;&nbsp;{{ locale.admin.nav.FILES }}</a>
-    <a class="sidenav-item" href="/home/admin/archive"><i class="fas fa-archive"></i> &nbsp;{{ locale.admin.nav.ARCHIVE }}</a>
-    <a class="sidenav-item" href="/home/admin/urls"><i class="fas fa-link"></i> &nbsp;{{ locale.admin.nav.URLS }}</a>
+    <a class="sidenav-item" href="/home/admin"><i class="fas fa-user"></i> &nbsp;&nbsp;{{ locale.admin.nav.USERS }} ({{ nav_stats.get("users") }})</a>
+    <a class="sidenav-item" href="/home/admin/files"><i class="fas fa-file-alt"></i> &nbsp;&nbsp;{{ locale.admin.nav.FILES }} ({{ nav_stats.get("files") }})</a>
+    <a class="sidenav-item" href="/home/admin/archive"><i class="fas fa-archive"></i> &nbsp;{{ locale.admin.nav.ARCHIVE }} ({{ nav_stats.get("archived") }})</a>
+    <a class="sidenav-item" href="/home/admin/urls"><i class="fas fa-link"></i> &nbsp;{{ locale.admin.nav.URLS }} ({{ nav_stats.get("urls") }})</a>
 </div>

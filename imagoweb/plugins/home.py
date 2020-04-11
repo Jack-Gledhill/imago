@@ -27,7 +27,11 @@ def account_page():
 
     return render_template(template_name_or_list="home/account.html",
                            user=user,
-                           superuser=user.user_id == const.superuser.user_id)
+                           superuser=user.user_id == const.superuser.user_id,
+                           nav_stats=dict(files=len(all(iterable=cache.files,
+                                                        condition=lambda file: file.owner_id == user.user_id)),
+                                          urls=len(all(iterable=cache.urls,
+                                                       condition=lambda url: url.owner_id == user.user_id))))
 
 @app.route(rule="/files")
 @app.route(rule="/home/files")
@@ -43,7 +47,11 @@ def files_page():
     return render_template(template_name_or_list="home/files.html",
                            user=user,
                            files=all(iterable=cache.files,
-                                     condition=lambda file: file.owner_id == user.user_id and not file.deleted))
+                                     condition=lambda file: file.owner_id == user.user_id and not file.deleted),
+                           nav_stats=dict(files=len(all(iterable=cache.files,
+                                                        condition=lambda file: file.owner_id == user.user_id)),
+                                          urls=len(all(iterable=cache.urls,
+                                                       condition=lambda url: url.owner_id == user.user_id))))
 
 @app.route(rule="/urls")
 @app.route(rule="/home/urls")
@@ -59,4 +67,8 @@ def shortened_urls():
     return render_template(template_name_or_list="home/urls.html",
                            user=user,
                            urls=all(iterable=cache.urls,
-                                    condition=lambda url: url.owner_id == user.user_id))
+                                    condition=lambda url: url.owner_id == user.user_id),
+                           nav_stats=dict(files=len(all(iterable=cache.files,
+                                                        condition=lambda file: file.owner_id == user.user_id)),
+                                          urls=len(all(iterable=cache.urls,
+                                                       condition=lambda url: url.owner_id == user.user_id))))

@@ -39,7 +39,13 @@ def users_page():
                            user=user,
                            superuser_id=const.superuser.user_id,
                            superuser=user.api_token == const.superuser.api_token,
-                           users=cache.users)
+                           users=cache.users,
+                           nav_stats=dict(users=len(cache.users),
+                                          files=len(all(iterable=cache.files,
+                                                        condition=lambda file: not file.deleted)),
+                                          archived=len(all(iterable=cache.files,
+                                                           condition=lambda file: file.deleted and os.path.exists(f"archive/{file.discrim}"))),
+                                          urls=len(cache.urls)))
 
 @app.route(rule="/admin/files")
 @app.route(rule="/home/admin/files")
@@ -60,7 +66,13 @@ def file_gallery():
                            superuser_id=const.superuser.user_id,
                            superuser=user.api_token == const.superuser.api_token,
                            files=all(iterable=cache.files,
-                                     condition=lambda file: not file.deleted))
+                                     condition=lambda file: not file.deleted),
+                           nav_stats=dict(users=len(cache.users),
+                                          files=len(all(iterable=cache.files,
+                                                        condition=lambda file: not file.deleted)),
+                                          archived=len(all(iterable=cache.files,
+                                                           condition=lambda file: file.deleted and os.path.exists(f"archive/{file.discrim}"))),
+                                          urls=len(cache.urls)))
 
 @app.route(rule="/admin/urls")
 @app.route(rule="/home/admin/urls")
@@ -80,7 +92,13 @@ def url_list():
                            user=user,
                            superuser_id=const.superuser.user_id,
                            superuser=user.api_token == const.superuser.api_token,
-                           urls=cache.urls)
+                           urls=cache.urls,
+                           nav_stats=dict(users=len(cache.users),
+                                          files=len(all(iterable=cache.files,
+                                                        condition=lambda file: not file.deleted)),
+                                          archived=len(all(iterable=cache.files,
+                                                           condition=lambda file: file.deleted and os.path.exists(f"archive/{file.discrim}"))),
+                                          urls=len(cache.urls)))
 
 @app.route(rule="/admin/archive")
 @app.route(rule="/home/admin/archive")
@@ -103,7 +121,13 @@ def file_archive():
     return render_template(template_name_or_list="admin/archive.html",
                            user=user,
                            files=all(iterable=cache.files,
-                                     condition=lambda file: file.deleted and os.path.exists(f"archive/{file.discrim}")))
+                                     condition=lambda file: file.deleted and os.path.exists(f"archive/{file.discrim}")),
+                           nav_stats=dict(users=len(cache.users),
+                                          files=len(all(iterable=cache.files,
+                                                        condition=lambda file: not file.deleted)),
+                                          archived=len(all(iterable=cache.files,
+                                                           condition=lambda file: file.deleted and os.path.exists(f"archive/{file.discrim}"))),
+                                          urls=len(cache.urls)))
 
 @app.route(rule="/new")
 @app.route(rule="/home/admin/new")
@@ -121,7 +145,13 @@ def new_user_page():
 
     return render_template(template_name_or_list="admin/new.html",
                            is_superuser=user.user_id == const.superuser.user_id,
-                           user=user)
+                           user=user,
+                           nav_stats=dict(users=len(cache.users),
+                                          files=len(all(iterable=cache.files,
+                                                        condition=lambda file: not file.deleted)),
+                                          archived=len(all(iterable=cache.files,
+                                                           condition=lambda file: file.deleted and os.path.exists(f"archive/{file.discrim}"))),
+                                          urls=len(cache.urls)))
 
 @app.route(rule="/edit/<victim_id>")
 @app.route(rule="/home/admin/edit/<victim_id>")
@@ -145,4 +175,10 @@ def edit_user_page(victim_id: int):
 
     return render_template(template_name_or_list="admin/edit.html",
                            victim=victim,
-                           user=user)
+                           user=user,
+                           nav_stats=dict(users=len(cache.users),
+                                          files=len(all(iterable=cache.files,
+                                                        condition=lambda file: not file.deleted)),
+                                          archived=len(all(iterable=cache.files,
+                                                           condition=lambda file: file.deleted and os.path.exists(f"archive/{file.discrim}"))),
+                                          urls=len(cache.urls)))
