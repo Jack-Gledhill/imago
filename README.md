@@ -40,6 +40,7 @@ At first, configuring ShareX may not seem like a simple task. So here's an examp
 
 Field | Value
 ----- | -----
+Destination type | Image uploader; File uploader; Text uploader
 URL | https://example.com/api/upload
 Method | POST
 Body | Form data (multipart/form-data)
@@ -50,6 +51,7 @@ Headers (key: value) | Authorization: your api token
 
 Field | Value
 ----- | -----
+Destination type | URL shortener
 URL | https://example.com/api/shorten
 Method | POST
 Body | JSON (application/json)
