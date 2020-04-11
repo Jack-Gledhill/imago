@@ -14,7 +14,7 @@
                 <tr id="{{ u.discrim }}">
                     <td>{{ u.url_id }}</td>
                     <td><a href="/u/{{ u.discrim }}" target="_blank">{{ u.discrim }}</a></td>
-                    <td><a href="{{ u.url }}" target="_blank">{{ textwrap.shorten(u.url, width=100, placeholder="...") }}</a></td>
+                    <td><a href="{{ u.url }}" target="_blank">{{ u.url[:60] + ("..." if len(u.url[:60]) < len(u.url) else "") }}</a></td>
                     <td>{{ u.created_at_friendly }}</td>
                     <td>
                         <button class="action-button red-button tooltip" onclick="delete_url('{{ u.discrim }}')">

@@ -1,11 +1,6 @@
 # ========================
 # Import PATH dependencies
 # ========================
-# --------------------
-# Builtin dependencies
-# --------------------
-import textwrap
-
 # ------------------------
 # Third-party dependencies
 # ------------------------
@@ -24,4 +19,4 @@ def inject_globals():
 
     return dict(version=dict(const.version),
                 locale=locales.get(config.default_locale),
-                textwrap=textwrap)
+                len=len)
