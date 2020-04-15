@@ -196,12 +196,12 @@ function toggle_admin(id) {
                         let admin_value = "???"
 
                         if (res.new_values.admin) {
-                            admin_value = "Yes";
+                            admin_value = '<i class="fas fa-check"></i>';
                         } else {
-                            admin_value = "No";
+                            admin_value = '<i class="fas fa-times"></i>';
                         };
 
-                        element.children[3].innerText = admin_value;
+                        element.children[3].innerHTML = admin_value;
 
                         swal({
                             title: "Toggled",

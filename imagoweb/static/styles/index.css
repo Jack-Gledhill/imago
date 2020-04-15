@@ -14,6 +14,10 @@ a {
     color: #4196F7;
 }
 
+.blocked {
+    cursor: not-allowed !important;
+}
+
 /* Restyle sweetalert boxes */
 .swal-button {
     transition: .17s ease-in-out;

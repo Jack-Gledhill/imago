@@ -18,9 +18,25 @@
             {% for u in users %}
                 <tr id="{{ u.user_id }}">
                     <td>{{ u.user_id }}</td>
-                    <td>{{ u.username }}</td>
+                    {% if u.user_id == superuser_id %}
+                        <td>
+                            {{ u.username }} 
+                            <span class="name-tag tooltip">
+                                <i class="fas fa-check"></i> SYSTEM
+                                <span class="tooltiptext">{{ locale.admin.tags.IS_SYSTEM }}</span>
+                            </span>
+                        </td>
+                    {% else %}
+                        <td>{{ u.username }}</td>
+                    {% endif %}
                     <td>{{ u.display_name }}</td>
-                    <td>{{ "Yes" if u.is_admin else "No" }}</td>
+                    <td>
+                        {% if u.is_admin %}
+                            <i class="fas fa-check"></i>
+                        {% else %} 
+                            <i class="fas fa-times"></i>
+                        {% endif %}
+                    </td>
                     <td>
                         {% if u.user_id not in (user.user_id, superuser_id) and (not u.is_admin or superuser)  %}
                             {% if user.user_id == superuser_id %}

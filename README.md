@@ -118,4 +118,5 @@ At first glance, there doesn't appear to be any obvious way to setup this server
 This repository includes 2 files located in [/imagoweb/static/assets](https://github.com/milasoftwaregroup/imago/tree/master/imagoweb/static/assets) that do not belong to [Mila Software Group™](https://mila-software.group). Said files are:
 - [login_background.jpg](https://github.com/milasoftwaregroup/imago/tree/master/imagoweb/static/assets/login_background.jpg)
 - [error_background.png](https://github.com/milasoftwaregroup/imago/tree/master/imagoweb/static/assets/error_background.png)
+
 These files are property of [DiscordApp](https://discordapp.com) and all rights are reserved to them for these files.

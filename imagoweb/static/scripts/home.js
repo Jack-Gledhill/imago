@@ -100,6 +100,95 @@ function delete_url(discrim) {
   });
 };
 
+function new_url() {
+    let link_to = $("#link-box").val();
+    let custom_name = $("#name-box").val();
+
+    if (link_to.length === 0) {
+        $("#link-header").html("<span style='color: #f04747;'>LINK TO -</span> <span style='color: #f04747; font-weight: normal;'><i>This field is required</i></span>");
+    } else {
+        $("#link-header").html("LINK TO");
+    };
+
+    if (link_to.length !== 0) {
+        swal({
+            title: "Hold up!",
+            text: "Are you sure you want to do this?",
+            closeOnClickOutside: false,
+            closeOnEsc: false,
+            buttons: {
+                no: {
+                    text: "Cancel",
+                    value: "no"
+                },
+                yes: {
+                    text: "Continue",
+                    value: "yes",
+                    closeModal: false
+                },
+            }
+        }).then((option) => {
+            switch (option) {
+                case "no":
+                    swal.close();
+
+                    break;
+
+                case "yes":
+                    $.ajax({
+                        url: `/api/shorten`,
+                        type: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({
+                            url: link_to
+                        }),
+                        headers: {
+                            Authorization: getCookie("_auth_token"),
+                            "URL-Name": custom_name
+                        },
+                        success: function(res) {
+                            swal.close();
+
+                            swal({
+                                title: "URL Shortened",
+                                text: "The URL has been successfully shortened.",
+                                icon: "success",
+                                timer: 5000
+                            });
+
+                            setTimeout(() => {
+                                window.location.replace("/home/urls");
+                            }, 5000)
+                        },
+                        error: function(res) {
+                            swal.close();
+
+                            if (res.status === 403) {
+                                swal({
+                                    title: "Improper URL",
+                                    text: "Sorry, that URL is malformed. Please pick another.",
+                                    icon: "error"
+                                });
+                            } if (res.status === 409) {
+                                swal({
+                                    title: "Already Shortened",
+                                    text: "Sorry, that URL has already been shortened. Please pick another.",
+                                    icon: "error"
+                                });
+                            } else {
+                                swal({
+                                    title: "Unknown Error",
+                                    text: "Sorry, an error occurred. Please try again.",
+                                    icon: "error"
+                                });
+                            };
+                        }
+                    });
+            };
+        });
+    };
+};
+
 function reset_token(id) {
     if ($("#regen-button").hasClass("blocked")) return;
 

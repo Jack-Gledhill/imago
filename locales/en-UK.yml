@@ -82,6 +82,9 @@ admin:
         EDIT_ACCOUNT: Edit Account
         DELETE_ACCOUNT: Delete Account
 
+    tags:
+        IS_SYSTEM: Imago System
+
 errors:
     GO_BACK: Go back
 
@@ -136,6 +139,9 @@ home:
         CONFIRM_PASSWORD: CONFIRM PASSWORD
         DISPLAY_NAME: DISPLAY NAME
         API_TOKEN: API TOKEN
+        LINKS_TO: LINKS TO
+        CUSTOM_NAME: URL NAME
+        URL_NOT_ALLOWED: "You're not allowed to do this."
 
     tables:
         FILE_ID: File ID
@@ -150,6 +156,7 @@ home:
         SAVE_CHANGES: Save Changes
         DELETE_FILE: Delete File
         DELETE_URL: Delete URL
+        CREATE_URL: Create URL
 
 login:
     TITLE: Imago - Login

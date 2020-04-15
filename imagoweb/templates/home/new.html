@@ -1,0 +1,23 @@
+{% extends "home/base.html" %}
+
+{% block body_content %}
+    <div class="side-container">
+        <div class="field-container">
+            <div class="input-header" id="link-header">{{ locale.home.form.LINKS_TO }}</div>
+            <input class="input-box" id="link-box" type="text" placeholder value>
+        </div>
+        {% if can_custom_name %}
+            <div class="field-container">
+                <div class="input-header" id="name-header">{{ locale.home.form.CUSTOM_NAME }}</div>
+                <input class="input-box" id="name-box" type="text" placeholder value>
+            </div>
+        {% else %}
+            <div class="field-container">
+                <div class="input-header" id="name-header">{{ locale.home.form.CUSTOM_NAME }}</div>
+                <input class="input-box blocked" id="name-box" type="text" placeholder="{{ locale.home.form.URL_NOT_ALLOWED }}" value readonly>
+            </div>
+        {% endif %}
+        
+        <button type="submit" class="submit-button blue-button" onclick="new_url()">{{ locale.home.buttons.CREATE_URL }}</button>
+    </div>
+{% endblock %}

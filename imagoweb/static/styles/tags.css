@@ -1,0 +1,12 @@
+.name-tag {
+    border-radius: .1875rem;
+    background-color: #4196f7;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: white;
+    margin-left: 4px;
+    padding: 1px 4px;
+    letter-spacing: .7px;
+    font-weight: 600;
+    cursor: pointer;
+}

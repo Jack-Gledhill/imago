@@ -9,7 +9,7 @@ from flask import render_template, request, redirect
 # ======================
 # Import local libraries
 # ======================
-from imagoweb.util.constants import app, cache, const
+from imagoweb.util.constants import app, cache, config, const
 from imagoweb.util.utilities import all, check_user
 
 @app.route(rule="/")
@@ -68,6 +68,25 @@ def shortened_urls():
                            user=user,
                            urls=all(iterable=cache.urls,
                                     condition=lambda url: url.owner_id == user.user_id),
+                           nav_stats=dict(files=len(all(iterable=cache.files,
+                                                        condition=lambda file: file.owner_id == user.user_id)),
+                                          urls=len(all(iterable=cache.urls,
+                                                       condition=lambda url: url.owner_id == user.user_id))))
+
+@app.route(rule="/urls/new")
+@app.route(rule="/home/urls/new")
+def new_url():
+    """Allows a user to shorten a URL from the dashboard."""
+
+    user = check_user(token=request.cookies.get("_auth_token"))
+
+    if user is None:
+        return redirect(location="/api/login",
+                        code=303), 303
+
+    return render_template(template_name_or_list="home/new.html",
+                           user=user,
+                           can_custom_name=(user.is_admin and config.url_shortening.custom_url.admin_only) or not config.url_shortening.custom_url.admin_only,
                            nav_stats=dict(files=len(all(iterable=cache.files,
                                                         condition=lambda file: file.owner_id == user.user_id)),
                                           urls=len(all(iterable=cache.urls,

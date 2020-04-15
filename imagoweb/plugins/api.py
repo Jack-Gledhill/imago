@@ -142,16 +142,16 @@ def shorten_url():
                       condition=lambda url: url.url == to_shorten)
 
     if found_url:
-        return jsonify(dict(code=403,
+        return jsonify(dict(code=409,
                             message=LOCALE.invalid.URL_EXISTS,
-                            link=f"https://{request.url_root.lstrip('http://')}u/{found_url.discrim}")), 403
+                            link=f"https://{request.url_root.lstrip('http://')}u/{found_url.discrim}")), 409
 
     if re.match(pattern=URL_REGEX,
                 string=to_shorten) is None:
         return jsonify(dict(code=403,
                             message=LOCALE.invalid.URL)), 403
 
-    discriminator = request.headers.get(config.url_shortening.custom_url.header)
+    discriminator = request.headers.get("URL-Name")
 
     if not (user.is_admin and config.url_shortening.custom_url.admin_only) or not discriminator:
         discriminator = generate_discrim(cache_obj="urls")
@@ -213,7 +213,7 @@ def upload_file():
 
     file.save(f"static/uploads/{discriminator}")
 
-    if file_type == "image" and not bypass_optimise(header=request.headers.get(config.file_optimisation.admin_bypass.header),
+    if file_type == "image" and not bypass_optimise(header=request.headers.get("Compression-Bypass"),
                                                     user=user):
         optimise_image(discriminator=discriminator)
 

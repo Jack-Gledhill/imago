@@ -79,6 +79,9 @@
   transition: border-color .2s ease-in-out;
   cursor: text;
 }
+.input-box.blocked {
+  
+}
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus,

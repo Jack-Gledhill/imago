@@ -17,12 +17,10 @@ file_optimisation:
     admin_bypass:
         can_bypass: yes
         by_default: no
-        header: Compression-Bypass
 
 url_shortening:
     custom_url:
         admin_only: yes
-        header: URL-Name
 
 allowed_extensions:
     png: image
@@ -57,7 +55,7 @@ figlet:
 
 version:
     major: 3
-    minor: 3
+    minor: 5
     patch: 2
     release: stable
 

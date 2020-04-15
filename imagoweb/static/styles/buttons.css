@@ -9,9 +9,6 @@
     transition: .17s ease-in-out;
     cursor: pointer;
 }
-.blocked {
-    cursor: not-allowed !important;
-}
 
 /* Button colours */
 .red-button {

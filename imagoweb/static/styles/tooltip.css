@@ -5,7 +5,7 @@
 .tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
-    background-color: #2C2F33;
+    background-color: black;
     color: #fff;
     text-align: center;
     padding: 5px;
@@ -23,6 +23,7 @@
     bottom: 100%;
     left: 50%;
     margin-left: -65px;
+    text-transform: capitalize !important;
 }
 .tooltip .tooltiptext::after {
     content: " ";
@@ -32,5 +33,5 @@
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
-    border-color: #2C2F33 transparent transparent transparent;
+    border-color: black transparent transparent transparent;
 }

@@ -9,6 +9,11 @@
                 <th>{{ locale.admin.tables.LINKS_TO }}</th>
                 <th>{{ locale.home.tables.UPLOAD_DATE }}</th>
                 <th>{{ locale.home.tables.ACTIONS }}</th>
+                <th>
+                    <a class="green-button table-button" href="/home/urls/new">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                </th>
             </tr>
             {% for u in urls %}
                 <tr id="{{ u.discrim }}">
@@ -22,6 +27,7 @@
                             <span class="tooltiptext">{{ locale.home.buttons.DELETE_URL }}</span>
                         </button>
                     </td>
+                    <td></td>
                 </tr>
             {% endfor %}
         </table>
