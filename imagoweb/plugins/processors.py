@@ -19,4 +19,6 @@ def inject_globals():
 
     return dict(version=dict(const.version),
                 locale=locales.get(config.default_locale),
-                len=len)
+                metadata=const.metadata.as_tags,
+                len=len,
+                enumerate=enumerate)

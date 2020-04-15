@@ -22,8 +22,6 @@ from PIL import Image
 from imagoweb.util.blueprints import user
 from imagoweb.util.constants import cache, config, const, pool
 
-WEBHOOK_URL = "https://discordapp.com/api/webhooks/{id}/{token}"
-
 DISCORD_LOG_FORMATS = {
     "FILE_DELETE": ":wastebasket: {user} deleted a file:\n{url}?token={hook_token}",
     "FILE_UPLOAD": ":inbox_tray: {user} uploaded a file:\n{url}",
@@ -186,7 +184,7 @@ def make_discord_log(event: str,
         if fmt is None:
             return
 
-        webhook = first(iterable=config.discord.webhooks,
+        webhook = first(iterable=const.webhooks,
                         condition=lambda hookconfig: event in hookconfig.events)
 
         if webhook is None:
@@ -195,8 +193,7 @@ def make_discord_log(event: str,
         message = fmt.format(hook_token=webhook.token,
                              **event_values)
 
-        response = post(url=WEBHOOK_URL.format(id=webhook.id,
-                                               token=webhook.token),
+        response = post(url=webhook.url,
                         json={
                             "content": message,
                             "username": webhook.username
@@ -206,6 +203,6 @@ def make_discord_log(event: str,
         # Remove from config internally because the URL is incorrect
         # ==========================================================
         if response.status_code == 401:
-            config.discord.webhooks.remove(webhook)
+            const.webhooks.remove(webhook)
 
         return response

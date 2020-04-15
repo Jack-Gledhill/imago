@@ -15,6 +15,27 @@
                     </a>
                 </th>
             </tr>
+            {% for index, h in enumerate(webhooks) %}
+                <tr id="{{ -index - 1 }}">
+                    <td>{{ -index - 1 }}</td>
+                    <td>
+                        webhook_{{ index + 1 }}
+                        <span class="name-tag tooltip">
+                            <i class="fas fa-check"></i> BOT
+                            <span class="tooltiptext">{{ locale.admin.tags.IS_BOT }}</span>
+                        </span>
+                    </td>
+                    <td>{{ h.username }}</td>
+                    <td>
+                        <i class="fas fa-times"></i>
+                    </td>
+                    <td>
+                        {{ locale.admin.tables.NO_USER_ACTIONS }}
+                    </td>
+                    <td></td>
+                </tr>
+            {% endfor %}
+
             {% for u in users %}
                 <tr id="{{ u.user_id }}">
                     <td>{{ u.user_id }}</td>

@@ -19,7 +19,7 @@ from yaml import safe_load
 # ======================
 # Import local libraries
 # ======================
-from imagoweb.util.blueprints import user
+from imagoweb.util.blueprints import metadata, user, webhook
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # this stops the IDE from linting errors in the code where references
@@ -32,10 +32,8 @@ pool = None
 config = AttrDict(safe_load(open(file="config.yml")))
 
 const = AttrDict(dict(boot_dt=datetime.utcnow(),
-                      version=version(major=config.version.major,
-                                      minor=config.version.minor,
-                                      patch=config.version.patch,
-                                      release=config.version.release),
+                      version=version(**config.version),
+                      metadata=metadata(**config.metadata),
                       superuser=user(username=config.superuser.username,
                                      password=config.superuser.password,
 
@@ -44,7 +42,8 @@ const = AttrDict(dict(boot_dt=datetime.utcnow(),
 
                                      token=config.superuser.api_token,
                                      admin=True,
-                                     id=0)))
+                                     id=0),
+                       webhooks=[webhook(**hook) for hook in config.discord.webhooks if config.discord.enabled]))
 
 locales = {
     "en-US": AttrDict(safe_load(open(file="../locales/en-US.yml"))),

@@ -3,6 +3,16 @@
 # ================
 default_locale: en-US # available locales are listed in /locales; Dutch locale is incomplete
 
+metadata:
+    title: A ShareX file server
+    description: Imago is an efficient, highly-configurable ShareX upload server complete with its own dashboard and Administrator panel. With it, you can upload any file you like, be it an image, video, audio file or just plain text!
+    site_name: Imago CDN
+    theme_colour: 4196f7
+    
+    url: https://imagocdn.com
+    image: meta/image.jpg
+    thumbnail: meta/thumbnail.jpg
+
 server:
     host: "0.0.0.0"
     port: 5000

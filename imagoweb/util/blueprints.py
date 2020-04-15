@@ -46,3 +46,50 @@ class url(blueprint):
         self.created_at_friendly = self.created_at.strftime("%d/%m/%Y %H:%M")
 
         self.owner = url_data.pop("owner")
+
+class webhook(blueprint):
+    def __init__(self,
+                 **webhook_data: dict):
+        self.id = webhook_data.pop("id")
+        self.token = webhook_data.pop("token")
+
+        self.username = webhook_data.pop("username")
+        self.events = webhook_data.pop("events")
+
+        self.url = f"https://discordapp.com/api/webhooks/{self.id}/{self.token}"
+
+class metadata(blueprint):
+    def __init__(self,
+                 **meta_data: dict):
+        self.title = meta_data.pop("title")
+        self.description = meta_data.pop("description")
+        self.theme_colour = meta_data.pop("theme_colour")
+
+        self.url = meta_data.pop("url") 
+        self.image = meta_data.pop("image")
+        self.thumbnail = meta_data.pop("thumbnail")
+        self.site_name = meta_data.pop("site_name")
+
+    @property
+    def as_tags(self) -> str:
+        """Returns all of the stored meta data as HTML tags that can be put straight into a template."""
+
+        return f"""<meta property="og:title" content="{self.title}">
+                   <meta name="twitter:title" content="{self.title}">
+
+                   <meta name="theme-color" content="#{self.theme_colour}">
+                   
+                   <link rel="canonical" href="{self.url}">
+                   <meta property="og:url" content="{self.url}">
+                   <meta name="twitter:url" content="{self.url}">
+                   
+                   <meta name="description" content="{self.description}">
+                   <meta property="og:description" content="{self.description}">
+                   <meta name="twitter:description" content="{self.description}">
+                   
+                   <meta property="og:image" content="{self.image}">
+                   <meta name="twitter:image" content="{self.image}">
+                   <meta property="og:thumbnail" content="{self.thumbnail}">
+                   
+                   <meta property="og:site_name" content="{self.site_name}">
+                   <meta property="og:type" content="website">"""

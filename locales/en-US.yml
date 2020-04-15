@@ -84,6 +84,7 @@ admin:
 
     tags:
         IS_SYSTEM: Imago System
+        IS_BOT: System Bot
 
 errors:
     GO_BACK: Go back
