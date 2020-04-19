@@ -298,6 +298,7 @@ def restore_file(filename: str):
                     dict(discrim=filename))
 
     file.deleted = False
+    file_type = filetype(filename=filename)
 
     cache.files[cache.files.index(file)] = file
 
