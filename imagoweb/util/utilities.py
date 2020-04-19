@@ -9,6 +9,7 @@ import re
 from random import choice
 from string import ascii_letters, digits
 from typing import Union, Optional, Iterable, Any, Callable, List
+from datetime import datetime
 
 # ------------------------
 # Third-party dependencies
@@ -19,7 +20,8 @@ from PIL import Image
 # =========================
 # Import local dependencies
 # =========================
-from imagoweb.util.blueprints import user
+from imagoweb.util import console
+from imagoweb.util.blueprints import sysmsg, user
 from imagoweb.util.constants import cache, config, const, pool
 
 DISCORD_LOG_FORMATS = {
@@ -171,6 +173,57 @@ def optimise_image(discriminator: str):
     saved_file.save(fp=path,
                      optimize=config.file_optimisation.compress,
                      quality=config.file_optimisation.quality)
+
+def dispatch_event(event: str,
+                   recipient_id: int,
+                   **hook_data: dict):
+    """Dispatches a particular event.
+    
+    This creates a log at the DEBUG level as well as triggering any applicable system messages and webhook logs."""
+
+    console.debug(text=f"Event {event} was triggered for user {recipient_id}.")
+
+    if event in config.sys_messaging.events:
+        create_sys_msg(content=config.sys_messaging.events.get(event),
+                       recipient_id=recipient_id)
+
+    make_discord_log(event=event,
+                     **hook_data)
+
+def create_sys_msg(event: str,
+                   created_at: Optional[datetime] = None,
+                   **msg_data: dict):
+    """Sends a system message to a given user ID. 
+    
+    If a timestamp is not provided then the current timestamp is used."""
+
+    content = config.sys_messaging.events.get(event)
+    
+    if not content or msg_data.get("recipient") is None:
+        return
+
+    content = (config.sys_messaging.before + content + config.sys_messaging.after).format(**msg_data)
+
+    if created_at is None:
+        created_at = datetime.utcnow()
+
+    with pool.cursor() as con:
+        query = """INSERT INTO system_messages (content, recipient_id, created_at)
+                   VALUES (%(content)s, %(recipient_id)s, %(created_at)s)
+                   
+                   RETURNING id;"""
+
+        con.execute(query,
+                    dict(content=content,
+                         recipient_id=msg_data.get("recipient").user_id,
+                         created_at=created_at))
+
+        msg_id = con.fetchone()
+
+        cache.messages.append(sysmsg(id=msg_id,
+                                     recipient_id=msg_data.get("recipient").user_id,
+                                     content=content,
+                                     created_at=created_at))
 
 def make_discord_log(event: str,
                      **event_values: dict):

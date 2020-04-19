@@ -35,7 +35,7 @@ sys.path.append("..")
 
 from imagoweb.util import console, constants
 from imagoweb.util.constants import cache, config
-from imagoweb.util.blueprints import upload, url, user
+from imagoweb.util.blueprints import sysmsg, upload, url, user
 
 # ==============================
 # Check for missing dependencies
@@ -182,7 +182,8 @@ class Imago:
             # ================================
             queries = ("""CREATE TABLE IF NOT EXISTS imago_users (id SERIAL PRIMARY KEY, username TEXT UNIQUE, password TEXT, display_name TEXT, admin BOOLEAN, created_at TIMESTAMP, api_token TEXT);""",
                        """CREATE TABLE IF NOT EXISTS uploaded_files (id SERIAL PRIMARY KEY, owner_id INT, discriminator TEXT UNIQUE, created_at TIMESTAMP, deleted BOOLEAN);""",
-                       """CREATE TABLE IF NOT EXISTS shortened_urls (id SERIAL PRIMARY KEY, owner_id INT, discriminator TEXT UNIQUE, url TEXT, created_at TIMESTAMP)""")
+                       """CREATE TABLE IF NOT EXISTS shortened_urls (id SERIAL PRIMARY KEY, owner_id INT, discriminator TEXT UNIQUE, url TEXT, created_at TIMESTAMP);""",
+                       """CREATE TABLE IF NOT EXISTS system_messages (id SERIAL PRIMARY KEY, recipient_id INT, content TEXT, created_at TIMESTAMP);""")
 
             for query in queries:
                 con.execute(query)
@@ -241,6 +242,18 @@ class Imago:
                                       owner=first(iterable=cache.users,
                                                   condition=lambda user: user.user_id == shortened_url[1])))
 
+            query = """SELECT id, recipient_id, content, created_at
+                       FROM system_messages
+                       ORDER BY created_at ASC;"""
+
+            con.execute(query)
+
+            for sys_msg in con.fetchall():
+                cache.messages.append(sysmsg(id=sys_msg[0],
+                                             recipient_id=sys_msg[1],
+                                             content=sys_msg[2],
+                                             created_at=sys_msg[3]))
+
         console.info(text=f"Server started at: http://{host}:{port}")
 
         # ==================
@@ -276,7 +289,7 @@ class Imago:
                 crontab.remove(previous_cron)
 
             job = crontab.new(command=command.format(cwd=os.path.dirname(os.path.realpath(__file__))),
-                              comment="imago-archive")
+                              comment="imago-archive")  
             job.minute.on(0)
             job.hour.on(0)
             crontab.write()

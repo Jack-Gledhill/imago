@@ -31,7 +31,32 @@ def account_page():
                            nav_stats=dict(files=len(all(iterable=cache.files,
                                                         condition=lambda file: file.owner_id == user.user_id)),
                                           urls=len(all(iterable=cache.urls,
-                                                       condition=lambda url: url.owner_id == user.user_id))))
+                                                       condition=lambda url: url.owner_id == user.user_id)),
+                                          messages=len(all(iterable=cache.messages,
+                                                           condition=lambda msg: msg.recipient_id == user.user_id))))
+
+@app.route(rule="/messages")
+@app.route(rule="/home/messages")
+def messaging_page():
+    """Displays a list of system messages sent to the user."""
+
+    user = check_user(token=request.cookies.get("_auth_token"))
+
+    if user is None:
+        return redirect(location="/api/login",
+                        code=303), 303
+
+    return render_template(template_name_or_list="home/messages.html",
+                           user=user,
+                           superuser=const.superuser,
+                           nav_stats=dict(files=len(all(iterable=cache.files,
+                                                        condition=lambda file: file.owner_id == user.user_id)),
+                                          urls=len(all(iterable=cache.urls,
+                                                       condition=lambda url: url.owner_id == user.user_id)),
+                                          messages=len(all(iterable=cache.messages,
+                                                           condition=lambda msg: msg.recipient_id == user.user_id))),
+                           messages=all(iterable=cache.messages,
+                                        condition=lambda msg: msg.recipient_id == user.user_id))
 
 @app.route(rule="/files")
 @app.route(rule="/home/files")
@@ -51,7 +76,9 @@ def files_page():
                            nav_stats=dict(files=len(all(iterable=cache.files,
                                                         condition=lambda file: file.owner_id == user.user_id)),
                                           urls=len(all(iterable=cache.urls,
-                                                       condition=lambda url: url.owner_id == user.user_id))))
+                                                       condition=lambda url: url.owner_id == user.user_id)),
+                                          messages=len(all(iterable=cache.messages,
+                                                           condition=lambda msg: msg.recipient_id == user.user_id))))
 
 @app.route(rule="/urls")
 @app.route(rule="/home/urls")
@@ -71,7 +98,9 @@ def shortened_urls():
                            nav_stats=dict(files=len(all(iterable=cache.files,
                                                         condition=lambda file: file.owner_id == user.user_id)),
                                           urls=len(all(iterable=cache.urls,
-                                                       condition=lambda url: url.owner_id == user.user_id))))
+                                                       condition=lambda url: url.owner_id == user.user_id)),
+                                          messages=len(all(iterable=cache.messages,
+                                                           condition=lambda msg: msg.recipient_id == user.user_id))))
 
 @app.route(rule="/urls/new")
 @app.route(rule="/home/urls/new")
@@ -90,4 +119,6 @@ def new_url():
                            nav_stats=dict(files=len(all(iterable=cache.files,
                                                         condition=lambda file: file.owner_id == user.user_id)),
                                           urls=len(all(iterable=cache.urls,
-                                                       condition=lambda url: url.owner_id == user.user_id))))
+                                                       condition=lambda url: url.owner_id == user.user_id)),
+                                          messages=len(all(iterable=cache.messages,
+                                                           condition=lambda msg: msg.recipient_id == user.user_id))))

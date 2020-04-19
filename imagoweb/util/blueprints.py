@@ -50,13 +50,24 @@ class url(blueprint):
 class webhook(blueprint):
     def __init__(self,
                  **webhook_data: dict):
-        self.id = webhook_data.pop("id")
+        self.hook_id = webhook_data.pop("id")
         self.token = webhook_data.pop("token")
 
         self.username = webhook_data.pop("username")
         self.events = webhook_data.pop("events")
 
-        self.url = f"https://discordapp.com/api/webhooks/{self.id}/{self.token}"
+        self.url = f"https://discordapp.com/api/webhooks/{self.hook_id}/{self.token}"
+
+class sysmsg(blueprint):
+    def __init__(self,
+                 **message_data: dict):
+        self.msg_id = message_data.pop("id")
+        self.recipient_id = message_data.pop("recipient_id")
+
+        self.content = message_data.pop("content")
+
+        self.created_at = message_data.pop("created_at")
+        self.created_at_friendly = self.created_at.strftime("%d/%m/%Y at %H:%M")
 
 class metadata(blueprint):
     def __init__(self,

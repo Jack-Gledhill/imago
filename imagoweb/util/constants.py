@@ -19,7 +19,7 @@ from yaml import safe_load
 # ======================
 # Import local libraries
 # ======================
-from imagoweb.util.blueprints import metadata, user, webhook
+from imagoweb.util.blueprints import metadata, sysmsg, user, webhook
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # this stops the IDE from linting errors in the code where references
@@ -53,9 +53,10 @@ locales = {
 }
 
 cache = namedtuple(typename="cache", 
-                   field_names="files, urls, users")(files=[], 
-                                                     urls=[],
-                                                     users=[const.superuser])
+                   field_names="files, messages, urls, users")(files=[],
+                                                               messages=[],
+                                                               urls=[],
+                                                               users=[const.superuser])
 
 epoch = datetime(year=2000,
                  month=1,

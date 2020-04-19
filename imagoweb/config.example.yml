@@ -65,9 +65,29 @@ figlet:
 
 version:
     major: 3
-    minor: 5
+    minor: 6
     patch: 2
     release: stable
+
+sys_messaging:
+    before: Hey {recipient.display_name}, <br><br>
+    after: <br><br>Sincerely, <br>Project Imago
+
+    events:
+        FORCE_USER_CREATE: We would like to wish you a warm welcome to Project Imago - the only ShareX server you'll ever need! With this dashboard, you are able to look at - and delete - any files or shortened URLs uploaded by you. You are also able to edit your account credentials and reset your account's API token if necessary.
+
+        FORCE_USER_TOKEN_RESET: This is a notification to let you know that your account's API token has been reset by a Site Administrator. If you believe this was a mistake, please contact one of the Site Administrators.
+        USER_TOKEN_RESET: This is a notification to let you know that your account's API token has been reset. If you did not perform this action, please change your password immediately, otherwise, you can safely ignore this message.
+
+        ADMIN_TOGGLE_OFF: This is a notification to let you know that your account has been removed from the list of Site Administrators. This means that you are no longer able to access the Administrator dashboard or perform Administrator actions.
+        ADMIN_TOGGLE_ON: This is a notification to let you know that your account has been added to the list of Site Administrators. You can now access the Administrator dashboard - by clicking the lock icon at the top-right of the screen - and perform Administrator actions like managing files, URLs and users.
+
+        FILE_RESTORE: This is a notification to let you know that a file owned by you (<a href="{url}">{url}</a>) - that was previously deleted - has been restored and can now be accessed as usual.
+
+        FORCE_FILE_DELETE: This is a notification to let you know that a file owned by you (<a href="{url}">{url}</a>) has been deleted by a Site Administrator and will be removed from the system at midnight. If you believe this was a mistake, please contact a Site Administrator before midnight and ask them to restore the file.
+        FORCE_URL_DELETE: This is a notification to let you know that a URL you have shortened (<a href="/u/{url}">{url}</a>) has been deleted by a Site Administrator and can no longer be accessed.
+
+        FORCE_USER_EDIT: This is a notification to let you know that a Site Administrator has forcibly edited your account. If you wish to know what was changed and why, or believe this was a mistake, please contact a Site Administrator.
 
 # ================
 # Superuser config

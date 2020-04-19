@@ -132,6 +132,7 @@ home:
         ACCOUNT: Account
         FILES: Files
         URLS: URLs
+        MESSAGES: Messages
 
     form:
         USERNAME: USERNAME
@@ -158,6 +159,9 @@ home:
         DELETE_FILE: Delete File
         DELETE_URL: Delete URL
         CREATE_URL: Create URL
+
+    tags:
+        IS_SYSTEM: Imago System
 
 login:
     TITLE: Imago - Login

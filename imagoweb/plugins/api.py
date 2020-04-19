@@ -17,7 +17,7 @@ from flask import abort, make_response, render_template, request, redirect, json
 # Import local libraries
 # ======================
 from imagoweb.util.constants import app, cache, config, const, epoch, locales, pool
-from imagoweb.util.utilities import bypass_optimise, check_user, filetype, filext, first, generate_discrim, generate_token, get_user, make_discord_log, optimise_image
+from imagoweb.util.utilities import bypass_optimise, check_user, create_sys_msg, filetype, filext, first, generate_discrim, generate_token, get_user, make_discord_log, optimise_image
 from imagoweb.util.blueprints import upload, url, user
 
 BASE = "/api"
@@ -179,6 +179,11 @@ def shorten_url():
 
     return_url = f"https://{request.url_root.lstrip('http://')}u/{discriminator}"
 
+    create_sys_msg(event="URL_SHORTEN",
+                   recipient=user,
+                   url=return_url,
+                   link=to_shorten)
+
     make_discord_log(event="URL_SHORTEN",
                      user=user.display_name,
                      url=return_url,
@@ -243,6 +248,10 @@ def upload_file():
 
     url = f"https://{request.url_root.lstrip('http://')}{'f' if file_type != 'image' else 'i'}/{discriminator}"
 
+    create_sys_msg(event="FILE_UPLOAD",
+                   recipient=user,
+                   url=url)
+
     make_discord_log(event="FILE_UPLOAD",
                      user=user.display_name,
                      url=url)
@@ -292,10 +301,15 @@ def restore_file(filename: str):
 
     cache.files[cache.files.index(file)] = file
 
+    create_sys_msg(event="FILE_RESTORE",
+                   recipient=file.owner,
+                   admin=user,
+                   url=f"https://{request.url_root.lstrip('http://')}{'f' if file_type != 'image' else 'i'}/{filename}")
+
     make_discord_log(event="FILE_RESTORE",
                      user=file.owner.display_name,
                      admin=user.display_name,
-                     url=f"https://{request.url_root.lstrip('http://')}{filename}")
+                     url=f"https://{request.url_root.lstrip('http://')}{'f' if file_type != 'image' else 'i'}/{filename}")
 
     return jsonify(dict(code=200,
                         message=LOCALE.success.RESTORE_FILE)), 200
@@ -339,12 +353,17 @@ def delete_url(url_discrim: str):
 
     with pool.cursor() as con:
         query = """DELETE FROM shortened_urls
-                    WHERE discriminator = %(discrim)s;"""
+                   WHERE discriminator = %(discrim)s;"""
 
         con.execute(query,
                     dict(discrim=url_discrim))
 
     cache.urls.remove(found_url)
+
+    create_sys_msg(event=event,
+                   recipient=found_url.owner,
+                   admin=user,
+                   link=found_url)
 
     make_discord_log(event=event,
                      user=found_url.owner.display_name,
@@ -407,10 +426,15 @@ def delete_file(filename: str):
 
         cache.files[cache.files.index(file)] = file
 
+        create_sys_msg(event=event,
+                       recipient=file.owner,
+                       admin=user,
+                       url=f"https://{request.url_root.lstrip('http://')}archive/{filename}")
+
         make_discord_log(event=event,
-                        user=file.owner.display_name,
-                        admin=user.display_name,
-                        url=f"https://{request.url_root.lstrip('http://')}archive/{filename}")
+                         user=file.owner.display_name,
+                         admin=user.display_name,
+                         url=f"https://{request.url_root.lstrip('http://')}archive/{filename}")
 
     else:
         with pool.cursor() as con:
@@ -424,10 +448,15 @@ def delete_file(filename: str):
 
         cache.files.remove(file)
 
+        create_sys_msg(event=event,
+                       recipient=file.owner,
+                       admin=user,
+                       url=f"https://{request.url_root.lstrip('http://')}{filename}")
+
         make_discord_log(event=event,
-                        user=file.owner.display_name,
-                        admin=user.display_name,
-                        url=f"https://{request.url_root.lstrip('http://')}{filename}")
+                         user=file.owner.display_name,
+                         admin=user.display_name,
+                         url=f"https://{request.url_root.lstrip('http://')}{filename}")
 
     return jsonify(dict(code=200,
                         message=LOCALE.success.DELETE_FILE)), 200
@@ -587,9 +616,14 @@ def new_user():
                     stripped_values)
 
         user_id = con.fetchone()[0]
+        user_obj = user(id=user_id,
+                        **stripped_values)
 
-        cache.users.append(user(id=user_id,
-                                **stripped_values))
+        cache.users.append(user_obj)
+
+    create_sys_msg(event="FORCE_USER_CREATE",
+                   recipient=user_obj,
+                   admin=perp)
 
     make_discord_log(event="FORCE_USER_CREATE",
                      user=stripped_values.get("display_name"),
@@ -641,6 +675,10 @@ def delete_user():
                     dict(user_id=victim.user_id))
 
         cache.users.remove(victim)
+
+    create_sys_msg(event="FORCE_USER_DELETE",
+                   recipient=victim,
+                   admin=user)
 
     make_discord_log(event="FORCE_USER_DELETE",
                      user=victim.display_name,
@@ -748,9 +786,9 @@ def edit_user():
         if toggled_to is True:
             event = "ADMIN_TOGGLE_ON"
 
-        make_discord_log(event=event,
-                         user=victim.display_name,
-                         admin=perp.display_name)
+    create_sys_msg(event=event,
+                   recipient=victim,
+                   admin=perp)
 
     make_discord_log(event=event,
                      user=victim.display_name,
@@ -816,6 +854,10 @@ def reset_token():
     event = "USER_TOKEN_RESET"
     if perp.user_id != victim.user_id:
         event = "FORCE_USER_TOKEN_RESET"
+
+    create_sys_msg(event=event,
+                   recipient=victim,
+                   admin=perp)
 
     make_discord_log(event=event,
                      user=victim.display_name,
