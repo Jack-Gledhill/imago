@@ -65,8 +65,8 @@ figlet:
 
 version:
     major: 3
-    minor: 6
-    patch: 3
+    minor: 7
+    patch: 4
     release: stable
 
 sys_messaging:
