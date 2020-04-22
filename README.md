@@ -77,24 +77,29 @@ At first glance, there doesn't appear to be any obvious way to setup this server
     git clone https://github.com/milasoftwaregroup/imago
     ```
 
-2. Now that you have the server scripts on your machine, make sure that you're in the repo's directory and run the following command:
+2. If you're on a Linux machine, you may get errors when trying to install psycopg2. If this is the case, you'll need to run the command below **before** doing step 3:
+    ```
+    sudo apt-get install python3-psycopg2
+    ```
+
+3. Now that you have the server scripts on your machine, make sure that you're in the repo's directory and run the following command:
     ```
     pip install -r requirements.txt
     ```
 
-3. It's configuring time! To start off, rename `config.example.yml` to `config.yml` and begin editing it. You are able to configure whatever values to whatever you wish.
+4. It's configuring time! To start off, rename `config.example.yml` to `config.yml` and begin editing it. You are able to configure whatever values to whatever you wish.
 
-4. Great! You're getting there, but there's one more thing you need to do before you can start the server. If you ran the start script at this point, the server would terminate as soon as you closed the terminal. To prevent this, you can use screen, Docker or anything similar to keep your application running in the background. We recommend you use screen as it's much simpler than Docker and does the job well. To enter a screen session, run:
+5. Great! You're getting there, but there's one more thing you need to do before you can start the server. If you ran the start script at this point, the server would terminate as soon as you closed the terminal. To prevent this, you can use screen, Docker or anything similar to keep your application running in the background. We recommend you use screen as it's much simpler than Docker and does the job well. To enter a screen session, run:
     ```
     screen -S <some_name>
     ```
 
-5. To start the server, you need to [cd](https://www.google.co.uk/url?sa=t&rct=j&q=&esrc=s&source=web&cd=11&cad=rja&uact=8&ved=2ahUKEwiN0pGc_LroAhUYkHIEHTTiC1wQFjAKegQIBxAB&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FCd_(command)&usg=AOvVaw3bknciTsDVK0HpAMlObHtH) into the `imagoweb` folder and run the imago.py file. This is commonly done by running:
+6. To start the server, you need to [cd](https://www.google.co.uk/url?sa=t&rct=j&q=&esrc=s&source=web&cd=11&cad=rja&uact=8&ved=2ahUKEwiN0pGc_LroAhUYkHIEHTTiC1wQFjAKegQIBxAB&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FCd_(command)&usg=AOvVaw3bknciTsDVK0HpAMlObHtH) into the `imagoweb` folder and run the imago.py file. This is commonly done by running:
     ```
     python imago.py
     ```
 
-6. You should now be able to find the server at the configured port of your IP address. However, if you own a domain name, you may want to serve Imago at that domain. For this, we can use Nginx with a configuration that looks something like this:
+7. You should now be able to find the server at the configured port of your IP address. However, if you own a domain name, you may want to serve Imago at that domain. For this, we can use Nginx with a configuration that looks something like this:
     ```
     server {
         listen 80;
@@ -111,7 +116,7 @@ At first glance, there doesn't appear to be any obvious way to setup this server
     }
     ```
 
-7. Once you're done configuring Nginx, head over to [CloudFlare](https://cloudflare.com) and setup your domain name there (if you haven't already). Once that's done, go into the DNS section of your domain and add a A record where the name is `@` and the IPv4 address is the address of your host machine. 
+8. Once you're done configuring Nginx, head over to [CloudFlare](https://cloudflare.com) and setup your domain name there (if you haven't already). Once that's done, go into the DNS section of your domain and add a A record where the name is `@` and the IPv4 address is the address of your host machine. 
 
 ## Notice of Copyright
 
