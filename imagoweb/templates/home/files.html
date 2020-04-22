@@ -8,6 +8,12 @@
                 <th>{{ locale.home.tables.DISCRIMINATOR }}</th>
                 <th>{{ locale.home.tables.UPLOAD_DATE }}</th>
                 <th>{{ locale.home.tables.ACTIONS }}</th>
+                <th>
+                    <a id="new-file-button" class="green-button table-button" onclick="document.getElementById('new-file').click();">
+                        <i class="fas fa-plus"></i>
+                        <input type="file" id="new-file" style="display: none;">
+                    </a>
+                </th>
             </tr>
             {% for i in files %}
                 <tr id="{{ i.discrim }}">
@@ -20,8 +26,15 @@
                             <span class="tooltiptext">{{ locale.home.buttons.DELETE_FILE }}</span>
                         </button>
                     </td>
+                    <td></td>
                 </tr>
             {% endfor %}
         </table>
     </div>
+
+    <script>
+        document.getElementById("new-file").addEventListener("change", function() {
+            upload_file(document.getElementById("new-file").files[0]);
+        });
+    </script>
 {% endblock %}

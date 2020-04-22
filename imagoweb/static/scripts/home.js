@@ -1,3 +1,59 @@
+function upload_file(file) {
+    swal({
+        title: "Hold up!",
+        text: "Are you sure you want to do this?",
+        closeOnClickOutside: false,
+        closeOnEsc: false,
+        buttons: {
+          no: {
+              text: "Cancel",
+              value: "no"
+          },
+          yes: {
+              text: "Continue",
+              value: "yes",
+              closeModal: false
+          },
+      }
+    }).then((option) => {
+        switch (option) {
+            case "no":
+              swal.close();
+  
+              break;
+  
+            case "yes":
+                let form_data = new FormData();
+                form_data.append("upload", file);
+
+                $.ajax({
+                    url: `/api/upload`,
+                    type: "POST",
+                    headers: {
+                        Authorization: getCookie("_auth_token")
+                    },
+                    data: form_data,
+                    contentType: false,
+                    processData: false,
+                    success: function(res) {
+                        swal.close();
+
+                        window.location.reload(false);
+                    },
+                    error: function(res) {
+                        swal.close();
+
+                        swal({
+                            title: "Unknown Error",
+                            text: "Sorry, an unknown error occurred when trying to upload that file. Please try again.",
+                            icon: "error"
+                        });
+                    }
+                });
+        };
+    });
+};
+
 function delete_file(discrim) {
   swal({
       title: "Hold up!",
