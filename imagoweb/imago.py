@@ -141,6 +141,13 @@ class Imago:
 
             console.debug(text="Starting in Debug mode.")
 
+        # ===========================
+        # Create required directories
+        # ===========================
+        for directory in ("static/uploads", "archive"):
+            os.makedirs(name=directory, 
+                        exist_ok=True)
+
         # =======================================
         # Configure HoneyBadger exception logging
         # =======================================

@@ -1,9 +1,3 @@
-# ===============================
-# Secrets, keys, configs and logs
-# ===============================
-imagoweb/config.yml
-imagoweb/logs/
-
 # =====================================
 # Byte-compiled / optimized / DLL files
 # =====================================
