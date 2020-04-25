@@ -17,7 +17,7 @@ from flask import abort, make_response, render_template, request, redirect, json
 # Import local libraries
 # ======================
 from imagoweb.util.constants import app, cache, config, const, epoch, locales, pool
-from imagoweb.util.utilities import bypass_optimise, check_user, create_sys_msg, filetype, filext, first, generate_discrim, generate_token, get_user, make_discord_log, optimise_image
+from imagoweb.util.utilities import bypass_optimise, check_user, create_sys_msg, filetype, filext, first, generate_discrim, generate_token, gen_hook_data, get_user, make_discord_log, optimise_image
 from imagoweb.util.blueprints import upload, url, user
 
 BASE = "/api"
@@ -169,13 +169,14 @@ def shorten_url():
                          created_at=datetime.utcnow()))
 
         url_id = con.fetchone()[0]
+        url_obj = url(id=url_id,
+                      owner_id=user.user_id,
+                      discrim=discriminator,
+                      url=to_shorten,
+                      created_at=datetime.utcnow(),
+                      owner=user)
 
-        cache.urls.insert(0, url(id=url_id,
-                                 owner_id=user.user_id,
-                                 discrim=discriminator,
-                                 url=to_shorten,
-                                 created_at=datetime.utcnow(),
-                                 owner=user))
+        cache.urls.insert(0, url_obj)
 
     return_url = f"https://{request.url_root.lstrip('http://')}u/{discriminator}"
 
@@ -185,9 +186,10 @@ def shorten_url():
                    link=to_shorten)
 
     make_discord_log(event="URL_SHORTEN",
-                     user=user.display_name,
-                     url=return_url,
-                     link=to_shorten)
+                     
+                     **gen_hook_data(actor=user,
+                                     url=url_obj,
+                                     root_url=request.url_root))
 
     return return_url, 200
 
@@ -234,17 +236,18 @@ def upload_file():
                          created_at=datetime.utcnow()))
 
         file_id = con.fetchone()[0]
+        file_obj = upload(id=file_id,
+                          owner_id=user.user_id,
+                          discrim=discriminator,
+                          created_at=datetime.utcnow(),
+                          owner=user,
+                          deleted=False)
 
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         # since we're always inserting new files to the front of the file cache,
         # the files will always be in descending order of creation time
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        cache.files.insert(0, upload(id=file_id,
-                                     owner_id=user.user_id,
-                                     discrim=discriminator,
-                                     created_at=datetime.utcnow(),
-                                     owner=user,
-                                     deleted=False))
+        cache.files.insert(0, file_obj)
 
     url = f"https://{request.url_root.lstrip('http://')}{'f' if file_type != 'image' else 'i'}/{discriminator}"
 
@@ -253,8 +256,10 @@ def upload_file():
                    url=url)
 
     make_discord_log(event="FILE_UPLOAD",
-                     user=user.display_name,
-                     url=url)
+                     
+                     **gen_hook_data(actor=user,
+                                     file=file_obj,
+                                     root_url=request.url_root))
 
     return url, 200
 
@@ -308,9 +313,10 @@ def restore_file(filename: str):
                    url=f"https://{request.url_root.lstrip('http://')}{'f' if file_type != 'image' else 'i'}/{filename}")
 
     make_discord_log(event="FILE_RESTORE",
-                     user=file.owner.display_name,
-                     admin=user.display_name,
-                     url=f"https://{request.url_root.lstrip('http://')}{'f' if file_type != 'image' else 'i'}/{filename}")
+
+                     **gen_hook_data(actor=user,
+                                     file=file,
+                                     root_url=request.url_root))
 
     return jsonify(dict(code=200,
                         message=LOCALE.success.RESTORE_FILE)), 200
@@ -367,9 +373,9 @@ def delete_url(url_discrim: str):
                    link=found_url)
 
     make_discord_log(event=event,
-                     user=found_url.owner.display_name,
-                     admin=user.display_name,
-                     link=found_url.url)
+
+                     **gen_hook_data(actor=user,
+                                     url=found_url))
 
     return jsonify(dict(code=200,
                         message=LOCALE.success.DELETE_URL)), 200
@@ -433,9 +439,10 @@ def delete_file(filename: str):
                        url=f"https://{request.url_root.lstrip('http://')}archive/{filename}")
 
         make_discord_log(event=event,
-                         user=file.owner.display_name,
-                         admin=user.display_name,
-                         url=f"https://{request.url_root.lstrip('http://')}archive/{filename}")
+
+                         **gen_hook_data(actor=user,
+                                         file=file,
+                                         root_url=request.url_root))
 
     else:
         with pool.cursor() as con:
@@ -455,9 +462,10 @@ def delete_file(filename: str):
                        url=f"https://{request.url_root.lstrip('http://')}{filename}")
 
         make_discord_log(event=event,
-                         user=file.owner.display_name,
-                         admin=user.display_name,
-                         url=f"https://{request.url_root.lstrip('http://')}{filename}")
+
+                         **gen_hook_data(actor=user,
+                                         file=file,
+                                         root_url=request.url_root))
 
     return jsonify(dict(code=200,
                         message=LOCALE.success.DELETE_FILE)), 200
@@ -627,8 +635,9 @@ def new_user():
                    admin=perp)
 
     make_discord_log(event="FORCE_USER_CREATE",
-                     user=stripped_values.get("display_name"),
-                     admin=perp.display_name)
+
+                     **gen_hook_data(actor=perp,
+                                     victim=user_obj))
 
     return jsonify(dict(code=200,
                         message=LOCALE.success.CREATE_USER,
@@ -682,8 +691,9 @@ def delete_user():
                    admin=user)
 
     make_discord_log(event="FORCE_USER_DELETE",
-                     user=victim.display_name,
-                     admin=user.display_name)
+
+                     **gen_hook_data(actor=user,
+                                     victim=victim))
 
     return jsonify(dict(code=200,
                         message=LOCALE.success.DELETE_USER)), 200
@@ -773,9 +783,11 @@ def edit_user():
                     dict(user_id=victim.user_id, 
                          **new_values))
 
-        cache.users[cache.users.index(victim)] = user(id=victim.user_id,
-                                                      created_at=victim.created_at,
-                                                      **new_values)
+        new_obj = user(id=victim.user_id,
+                       created_at=victim.created_at,
+                       **new_values)
+
+        cache.users[cache.users.index(victim)] = new_obj
 
     event = "USER_EDIT"
     if perp.user_id != victim.user_id:
@@ -792,8 +804,10 @@ def edit_user():
                    admin=perp)
 
     make_discord_log(event=event,
-                     user=victim.display_name,
-                     admin=perp.display_name)
+
+                     **gen_hook_data(actor=perp,
+                                     before=victim,
+                                     after=new_obj))
 
     return jsonify(dict(code=200,
                         message=LOCALE.success.EDIT_USER,
@@ -861,8 +875,9 @@ def reset_token():
                    admin=perp)
 
     make_discord_log(event=event,
-                     user=victim.display_name,
-                     admin=perp.display_name)
+
+                     **gen_hook_data(actor=perp,
+                                     victim=victim))
                                         
     return jsonify(dict(code=200,
                         message=LOCALE.success.TOKEN_RESET,

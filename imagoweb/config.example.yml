@@ -65,7 +65,7 @@ figlet:
 
 version:
     major: 3
-    minor: 7
+    minor: 8
     patch: 9
     release: stable
 
@@ -104,15 +104,170 @@ superuser:
 # =================
 discord:
     enabled: true
-    
+    FILE_DELETE: |-
+            ```md
+            [DELETE] Image
+            ==============
+
+            < SIZE   = {file[size]}KB
+            < TYPE   = {file[type]}/{file[ext]}
+            < KEY    = {file[key]}
+            
+            < AUTHOR = User #{file[author][id]} ({file[author][name]})
+            < ACTOR  = User #{actor[id]} ({actor[name]})```
+            {file[url]}
+
+        FILE_UPLOAD: |-
+            ```md
+            [UPLOAD] Image
+            ==============
+
+            < SIZE   = {file[size]}KB
+            < TYPE   = {file[type]}
+            < KEY    = {file[key]}
+            
+            < ACTOR  = User #{actor[id]} ({actor[name]})```
+            {file[url]}
+
+        URL_SHORTEN: |-
+            ```md
+            [SHORTEN] URL
+            =============
+
+            < URL    = {url[link]}
+            < KEY    = {url[key]}
+            
+            < ACTOR  = User #{actor[id]} ({actor[name]})```
+            {url[url]}
+
+        URL_DELETE: |-
+            ```md
+            [DELETE] URL
+            ============
+
+            < URL    = {url[link]}
+            < KEY    = {url[key]}
+            
+            < AUTHOR = User #{url[author][id]} ({url[author][name]})
+            < ACTOR  = User #{actor[id]} ({actor[name]})```
+
+        USER_EDIT: |-
+            ```md
+            [EDIT] User
+            ===========
+
+            < USERNAME       = {before[name]} > {after[name]}
+            < PASSWORD       = {before[password]} > {after[password]}
+            < DISPLAY NAME   = {before[display]} > {after[display]}
+
+            < ACTOR          = User #{after[id]} ({after[name]})```
+
+        USER_TOKEN_RESET: |-
+            ```md
+            [RESET] Token
+            =============
+
+            < USER   = User #{user[id]} ({user[name]})
+            < ACTOR  = User #{user[id]} ({user[name]})```
+
+        FORCE_USER_CREATE: |-
+            ```md
+            [CREATE] User
+            =============
+
+            < USERNAME      = {user[name]}
+            < PASSWORD      = (redacted)
+            < DISPLAY NAME  = {user[display]}
+            < ADMINISTRATOR = {'Yes' if user[admin] else 'No'}
+
+            < ACTOR         = User #{actor[id]} ({actor[name]})```
+
+        FORCE_USER_EDIT: |-
+            ```md
+            [EDIT] User
+            ===========
+
+            < USERNAME       = {before[name]} > {after[name]}
+            < PASSWORD       = {before[password]} > {after[password]}
+            < DISPLAY NAME   = {before[display]} > {after[display]}
+
+            < ACTOR          = User #{actor[id]} ({actor[name]})```
+
+        FORCE_USER_DELETE: |-
+            ```md
+            [DELETE] User
+            =============
+
+            < USER   = User #{user[id]} ({user[name]}) 
+            < JOINED = {user[created]}
+
+            < ACTOR  = User #{actor[id]} ({actor[name]})```
+
+        FORCE_USER_TOKEN_RESET: |-
+            ```md
+            [RESET] Token
+            =============
+
+            < USER  = User #{user[id]} ({user[name]}) 
+            < ACTOR = User #{actor[id]} ({actor[name]})```
+
+        FORCE_FILE_DELETE: |-
+            ```md
+            [DELETE] Image
+            ==============
+
+            < SIZE   = {file[size]}KB
+            < TYPE   = {file[type]}
+            < KEY    = {file[key]}
+            
+            < AUTHOR = User #{file[author][id]} ({file[author][name]})
+            < ACTOR  = User #{actor[id]} ({actor[name]})```
+            {file[url]}
+
+        FORCE_URL_DELETE: |-
+            ```md
+            [DELETE] URL
+            ============
+
+            < URL    = {url[link]}
+            < KEY    = {url[key]}
+            
+            < AUTHOR = User #{url[author][id]} ({url[author][name]})
+            < ACTOR  = User #{actor[id]} ({actor[name]})```
+
+        ADMIN_TOGGLE_ON: |-
+            ```md
+            [TOGGLE] Administrator
+            ======================
+            
+            < TOOGLED = On
+            
+            < USER    = User #{after[id]} ({after[name]})
+            < ACTOR   = User #{actor[id]} ({actor[name]})```
+
+        ADMIN_TOGGLE_OFF: |-
+            ```md
+            [TOGGLE] Administrator
+            ======================
+            
+            < TOOGLED = Off
+            
+            < USER    = User #{after[id]} ({after[name]})
+            < ACTOR   = User #{actor[id]} ({actor[name]})```
+
+    # you may list as many as you like    
     webhooks:
         - url: https://discordapp.com/api/webhooks/channel/token
           username: Imago Dashboard
+
           events:
-            - IMAGE_DELETE # image deleted by its owner
-            - IMAGE_UPLOAD # image uploaded
+            - FILE_DELETE # file deleted by its owner
+            - FILE_UPLOAD # file uploaded
+            - FILE_RESTORE # file restored
+
             - URL_SHORTEN # url shortened
             - URL_DELETE # shortened url deleted
+
             - USER_EDIT # user has edited their account
             - USER_TOKEN_RESET # user has reset their token
 
@@ -123,7 +278,7 @@ discord:
             - FORCE_USER_EDIT # admin edited a user by force
             - FORCE_USER_DELETE # admin deleted a user by force
             - FORCE_USER_TOKEN_RESET # admin reset a user's token by force
-            - FORCE_IMAGE_DELETE # admin deleted an image by force
+            - FORCE_FILE_DELETE # admin deleted an image by force
             - FORCE_URL_DELETE # admin deleted a shortened url
             - ADMIN_TOGGLE_ON # superuser made a user admin
             - ADMIN_TOGGLE_OFF # superuser removed admin from a user

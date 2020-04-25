@@ -4,7 +4,7 @@
 # -----------------
 # Builtin libraries
 # -----------------
-import re
+import os, re
 
 from random import choice
 from string import ascii_letters, digits
@@ -21,30 +21,8 @@ from PIL import Image
 # Import local dependencies
 # =========================
 from imagoweb.util import console
-from imagoweb.util.blueprints import sysmsg, user
+from imagoweb.util.blueprints import sysmsg, user, upload, url
 from imagoweb.util.constants import cache, config, const, pool
-
-DISCORD_LOG_FORMATS = {
-    "FILE_DELETE": ":wastebasket: {user} deleted a file:\n{url}?token={hook_token}",
-    "FILE_UPLOAD": ":inbox_tray: {user} uploaded a file:\n{url}",
-    "FILE_RESTORE": ":link: {admin} restored a file by {user}:\n{url}",
-
-    "URL_SHORTEN": ":link: {user} shortened a URL at {url}:\n{link}",
-    "URL_DELETE": ":wastebasket: {user} deleted a shortened URL:\n{link}",
-
-    "USER_EDIT": ":pencil: {user} edited their account.",
-    "USER_TOKEN_RESET": ":closed_lock_with_key: {user} reset their account token.",
-
-    "FORCE_USER_CREATE": ":inbox_tray: {admin} created an account with the name {user}.",
-    "FORCE_USER_EDIT": ":pencil: {user} was edited by {admin}.",
-    "FORCE_USER_DELETE": ":wastebasket: {user} was deleted by {admin}.",
-    "FORCE_USER_TOKEN_RESET": ":closed_lock_with_key: {user} had their token reset by {admin}.",
-    "FORCE_FILE_DELETE": ":wastebasket: {admin} deleted a file by {user}:\n{url}?token={hook_token}",
-    "FORCE_URL_DELETE": ":wastebasket: {admin} deleted a shortened URL by {user}:\n{link}",
-
-    "ADMIN_TOGGLE_ON": ":lock: {admin} made {user} an Administrator.",
-    "ADMIN_TOGGLE_OFF": ":unlock: {admin} removed Administrator from {user}."
-}
 
 def get_user(token_or_id: Union[str, int]) -> Union[user, None]:
     """Retrieves a user with a given API token or user ID.
@@ -115,7 +93,7 @@ def generate_token():
 def filetype(filename: str) -> Union[str, bool]:
     """This checks to see if the extension of the provided filename is legal according to the configuration file.
     
-    If allowed, the extension type (e.g: image/audio) is returned. Otherwise False is returned."""
+    If allowed, the extension type (e.g: image) is returned. Otherwise False is returned."""
 
     return config.allowed_extensions.get(filext(filename=filename), False)
 
@@ -174,22 +152,6 @@ def optimise_image(discriminator: str):
                      optimize=config.file_optimisation.compress,
                      quality=config.file_optimisation.quality)
 
-def dispatch_event(event: str,
-                   recipient_id: int,
-                   **hook_data: dict):
-    """Dispatches a particular event.
-    
-    This creates a log at the DEBUG level as well as triggering any applicable system messages and webhook logs."""
-
-    console.debug(text=f"Event {event} was triggered for user {recipient_id}.")
-
-    if event in config.sys_messaging.events:
-        create_sys_msg(content=config.sys_messaging.events.get(event),
-                       recipient_id=recipient_id)
-
-    make_discord_log(event=event,
-                     **hook_data)
-
 def create_sys_msg(event: str,
                    created_at: Optional[datetime] = None,
                    **msg_data: dict):
@@ -232,7 +194,7 @@ def make_discord_log(event: str,
     If Discord returns a 401, we internally disable Discord logging and warn the user that the token is invalid."""
 
     if config.discord.enabled:
-        fmt = DISCORD_LOG_FORMATS.get(event)
+        fmt = config.discord.messages.get(event)
 
         if fmt is None:
             return
@@ -243,8 +205,7 @@ def make_discord_log(event: str,
         if webhook is None:
             return
 
-        message = fmt.format(hook_token=webhook.token,
-                             **event_values)
+        message = fmt.format(**event_values)
 
         response = post(url=webhook.url,
                         json={
@@ -259,3 +220,61 @@ def make_discord_log(event: str,
             const.webhooks.remove(webhook)
 
         return response
+
+def gen_hook_data(actor: user,
+                  victim: Optional[user] = None,
+
+                  before: Optional[user] = None,
+                  after: Optional[user] = None,
+                  
+                  file: Optional[upload] = None,
+                  url: Optional[url] = None,
+                  
+                  root_url: Optional[str] = None) -> dict:
+    """Compiles a bunch of data into a dictionary that can be passed to a webhook."""
+
+    def _compile_user(user: user) -> dict:
+        return {
+            "id": user.user_id,
+            "name": user.username,
+            "password": user.password,
+            "display": user.display_name,
+            "created": user.created_at_friendly
+        }
+
+    compiled = {
+        "actor": _compile_user(user=actor)
+    }
+
+    if victim:
+        compiled["user"] = _compile_user(user=victim)
+
+    if before:
+        compiled["before"] = _compile_user(user=before)
+
+    if after:
+        compiled["after"] = _compile_user(user=after)
+
+    if file:
+        file_type = filetype(filename=file.discrim)
+
+        compiled["file"] = {
+            "size": round(os.path.getsize(f"static/uploads/{file.discrim}") / 1024, 2),
+            "type": file_type,
+            "ext": filext(filename=file.discrim),
+            "key": file.discrim,
+            "created": file.created_at_friendly,
+            "author": _compile_user(file.owner),
+            "url": f"https://{root_url.lstrip('http://')}{'f' if file_type != 'image' else 'i'}/{file.discrim}" if not file.deleted else f"https://{root_url.lstrip('http://')}archive/{file.discrim}"
+        }
+
+    if url:
+        compiled["url"] = {
+            "link": url.url,
+            "key": url.discrim,
+            "created": url.created_at_friendly,
+            "author": _compile_user(url.owner),
+            "url": f"https://{root_url.lstrip('http://')}u/{url.discrim}"
+        }
+
+    return compiled

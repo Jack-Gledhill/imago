@@ -19,6 +19,8 @@ class user(blueprint):
         self.user_id = user_data.pop("id")
         self.created_at = user_data.pop("created_at")
 
+        self.created_at_friendly = self.created_at.strftime("%d/%m/%Y %H:%M")
+
 class upload(blueprint):
     def __init__(self,
                  **upload_data: dict):
