@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block base_body_content %}
-    <form class="login-container">
+    <form class="login-container" onsubmit="event.preventDefault(); login();">
         <div class="banner red-banner white-text">{{ locale.login.form.INVALID_CREDS }}</div>
 
         <div class="field-container">
@@ -24,7 +24,7 @@
             <input class="input-box" id="password-box" type="password" placeholder value>
         </div>
         
-        <input type="submit" class="submit-button blue-button" onclick="login()" value="{{ locale.login.buttons.LOGIN }}">
+        <input type="submit" class="submit-button blue-button" value="{{ locale.login.buttons.LOGIN }}">
     </form>
 {% endblock %}
 
