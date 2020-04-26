@@ -117,7 +117,7 @@ discord:
             < ACTOR  = User #{actor[id]} ({actor[name]})```
             {file[url]}
 
-        FILE_UPLOAD: |-
+    FILE_UPLOAD: |-
             ```md
             [UPLOAD] Image
             ==============
@@ -129,7 +129,7 @@ discord:
             < ACTOR  = User #{actor[id]} ({actor[name]})```
             {file[url]}
 
-        URL_SHORTEN: |-
+    URL_SHORTEN: |-
             ```md
             [SHORTEN] URL
             =============
@@ -140,7 +140,7 @@ discord:
             < ACTOR  = User #{actor[id]} ({actor[name]})```
             {url[url]}
 
-        URL_DELETE: |-
+    URL_DELETE: |-
             ```md
             [DELETE] URL
             ============
@@ -151,7 +151,7 @@ discord:
             < AUTHOR = User #{url[author][id]} ({url[author][name]})
             < ACTOR  = User #{actor[id]} ({actor[name]})```
 
-        USER_EDIT: |-
+    USER_EDIT: |-
             ```md
             [EDIT] User
             ===========
@@ -162,7 +162,7 @@ discord:
 
             < ACTOR          = User #{after[id]} ({after[name]})```
 
-        USER_TOKEN_RESET: |-
+    USER_TOKEN_RESET: |-
             ```md
             [RESET] Token
             =============
@@ -170,7 +170,7 @@ discord:
             < USER   = User #{user[id]} ({user[name]})
             < ACTOR  = User #{user[id]} ({user[name]})```
 
-        FORCE_USER_CREATE: |-
+    FORCE_USER_CREATE: |-
             ```md
             [CREATE] User
             =============
@@ -182,7 +182,7 @@ discord:
 
             < ACTOR         = User #{actor[id]} ({actor[name]})```
 
-        FORCE_USER_EDIT: |-
+    FORCE_USER_EDIT: |-
             ```md
             [EDIT] User
             ===========
@@ -193,7 +193,7 @@ discord:
 
             < ACTOR          = User #{actor[id]} ({actor[name]})```
 
-        FORCE_USER_DELETE: |-
+    FORCE_USER_DELETE: |-
             ```md
             [DELETE] User
             =============
@@ -203,7 +203,7 @@ discord:
 
             < ACTOR  = User #{actor[id]} ({actor[name]})```
 
-        FORCE_USER_TOKEN_RESET: |-
+    FORCE_USER_TOKEN_RESET: |-
             ```md
             [RESET] Token
             =============
@@ -211,7 +211,7 @@ discord:
             < USER  = User #{user[id]} ({user[name]}) 
             < ACTOR = User #{actor[id]} ({actor[name]})```
 
-        FORCE_FILE_DELETE: |-
+    FORCE_FILE_DELETE: |-
             ```md
             [DELETE] Image
             ==============
@@ -224,7 +224,7 @@ discord:
             < ACTOR  = User #{actor[id]} ({actor[name]})```
             {file[url]}
 
-        FORCE_URL_DELETE: |-
+    FORCE_URL_DELETE: |-
             ```md
             [DELETE] URL
             ============
@@ -235,7 +235,7 @@ discord:
             < AUTHOR = User #{url[author][id]} ({url[author][name]})
             < ACTOR  = User #{actor[id]} ({actor[name]})```
 
-        ADMIN_TOGGLE_ON: |-
+    ADMIN_TOGGLE_ON: |-
             ```md
             [TOGGLE] Administrator
             ======================
@@ -245,7 +245,7 @@ discord:
             < USER    = User #{after[id]} ({after[name]})
             < ACTOR   = User #{actor[id]} ({actor[name]})```
 
-        ADMIN_TOGGLE_OFF: |-
+    ADMIN_TOGGLE_OFF: |-
             ```md
             [TOGGLE] Administrator
             ======================
@@ -257,8 +257,9 @@ discord:
 
     # you may list as many as you like    
     webhooks:
-        - url: https://discordapp.com/api/webhooks/channel/token
-          username: Imago Dashboard
+        - id: 123456789
+          token: ABCDEFGHIJ12345
+          username: Imago CDN
 
           events:
             - FILE_DELETE # file deleted by its owner
