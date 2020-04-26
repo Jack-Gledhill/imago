@@ -257,8 +257,9 @@ discord:
 
     # you may list as many as you like    
     webhooks:
-        - url: https://discordapp.com/api/webhooks/channel/token
-          username: Imago Dashboard
+        - id: 123456789
+          token: ABCDEFGHIJ12345
+          username: Imago CDN
 
           events:
             - FILE_DELETE # file deleted by its owner
