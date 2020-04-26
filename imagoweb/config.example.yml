@@ -66,7 +66,7 @@ figlet:
 version:
     major: 3
     minor: 8
-    patch: 9
+    patch: 10
     release: stable
 
 sys_messaging:
@@ -104,12 +104,12 @@ superuser:
 # =================
 discord:
     enabled: true
-    FILE_DELETE: |-
+    messages:
+        FILE_DELETE: |-
             ```md
             [DELETE] Image
             ==============
 
-            < SIZE   = {file[size]}KB
             < TYPE   = {file[type]}/{file[ext]}
             < KEY    = {file[key]}
             
@@ -178,7 +178,7 @@ discord:
             < USERNAME      = {user[name]}
             < PASSWORD      = (redacted)
             < DISPLAY NAME  = {user[display]}
-            < ADMINISTRATOR = {'Yes' if user[admin] else 'No'}
+            < ADMINISTRATOR = {user[admin]}
 
             < ACTOR         = User #{actor[id]} ({actor[name]})```
 
@@ -271,7 +271,8 @@ discord:
             - USER_EDIT # user has edited their account
             - USER_TOKEN_RESET # user has reset their token
 
-        - url: https://discordapp.com/api/webhooks/channel/token
+        - id: 123456789098765432
+          token: tokek
           username: Imago Admin Dashboard
           events:
             - FORCE_USER_CREATE # admin created a user

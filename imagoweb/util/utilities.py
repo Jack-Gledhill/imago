@@ -239,7 +239,8 @@ def gen_hook_data(actor: user,
             "name": user.username,
             "password": user.password,
             "display": user.display_name,
-            "created": user.created_at_friendly
+            "created": user.created_at_friendly,
+            "admin": "Yes" if user.is_admin else "No"
         }
 
     compiled = {
@@ -259,7 +260,7 @@ def gen_hook_data(actor: user,
         file_type = filetype(filename=file.discrim)
 
         compiled["file"] = {
-            "size": round(os.path.getsize(f"static/uploads/{file.discrim}") / 1024, 2),
+            "size": round(os.path.getsize(f"{'static/uploads' if not file.deleted else 'archive'}/{file.discrim}") / 1024, 2),
             "type": file_type,
             "ext": filext(filename=file.discrim),
             "key": file.discrim,
