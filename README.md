@@ -124,4 +124,4 @@ This repository includes 2 files located in [/imagoweb/static/assets](https://gi
 - [login_background.jpg](https://github.com/milasoftwaregroup/imago/tree/master/imagoweb/static/assets/login_background.jpg)
 - [error_background.png](https://github.com/milasoftwaregroup/imago/tree/master/imagoweb/static/assets/error_background.png)
 
-These files are property of [DiscordApp](https://discordapp.com) and all rights are reserved to them for these files.
+These files are property of [Discord](https://discord.com) and all rights are reserved to them for these files.
