@@ -2,6 +2,8 @@
 
 Imago is the webserver that the MSG Staff use to serve content at https://imagocdn.com. The server was designed to allow ShareX users to easily and securely upload their screenshots to a fast, well-designed and efficient server.
 
+**If you need support or wish to report a bug, please join my Discord server: https://discord.gg/CsHF5GX**
+
 ## Features
 
 Here's what you can expect from Imago once you install it on your machine and get it running:
