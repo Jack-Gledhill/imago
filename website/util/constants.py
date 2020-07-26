@@ -29,7 +29,6 @@ from util.blueprints import User
 config = AttrDict(safe_load(open(file="config.yml")))
 
 const = AttrDict(dict(boot_dt=datetime.utcnow(),
-                      version=version(**config.version),
                       superuser=User(username=config.superuser.username,
                                      password=config.superuser.password,
 
@@ -49,6 +48,11 @@ epoch = datetime(year=2000,
                  hour=0,
                  minute=0,
                  second=1)
+
+version = version(major=4,
+                  minor=2,
+                  patch=1,
+                  release="stable")
 
 app = None
 postgres = None

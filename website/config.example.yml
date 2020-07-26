@@ -69,12 +69,6 @@ figlet:
   font: standard
   width: 80
 
-version:
-  major: 4
-  minor: 2
-  patch: 1
-  release: stable
-
 superuser:
   username: superuser
   password: youshallnotpass
