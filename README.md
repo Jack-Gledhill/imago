@@ -2,6 +2,8 @@
 
 Imago is the webserver that I use to power [the TEK Net CDN](https://i.jacktek.net). The server was designed to allow ShareX users to easily and securely upload their screenshots to a fast, well-designed and efficient server.
 
+**If you need support or wish to report a bug, please join my Discord server: https://discord.gg/CsHF5GX**
+
 ## Features
 
 Here's what you can expect from Imago once you install it on your machine and get it running:
@@ -67,4 +69,4 @@ This repository includes 2 files located in [/imagoweb/static/assets](https://gi
 - [login_background.jpg](https://github.com/Jack-Gledhill/imago/tree/master/imagoweb/static/assets/login_background.jpg)
 - [error_background.png](https://github.com/Jack-Gledhill/imago/tree/master/imagoweb/static/assets/error_background.png)
 
-These files are property of [DiscordApp](https://discordapp.com) and all rights are reserved to them for these files.
+These files are property of [Discord](https://discord.com) and all rights are reserved to them for these files.
