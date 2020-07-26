@@ -39,6 +39,11 @@ allowed_extensions:
   cpp: code
   html: code
   css: code
+  json: code
+
+  zip: download
+  rar: download
+  7z: download
 
   md: markdown
 

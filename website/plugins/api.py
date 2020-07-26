@@ -16,7 +16,7 @@ from os import remove, rename, replace
 # ------------------------
 # Third-party dependencies
 # ------------------------
-from flask import abort, make_response, render_template, request, redirect, jsonify
+from flask import abort, jsonify, make_response, render_template, request, redirect, send_file
 
 # -------------------------
 # Local extension libraries
@@ -35,8 +35,8 @@ BASE = "/api"
 URL_REGEX = r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 
 app.config["MAX_IMAGE_FILESIZE"] = app.config["MAX_CONTENT_LENGTH"] = config.max_file_size.megabytes * 1024**2 + \
-                                   config.max_file_size.kilobytes * 1024
-                                   
+                                                                      config.max_file_size.kilobytes * 1024
+
 @app.route(rule=BASE + "/check",
            methods=["POST"])
 def check():
@@ -347,6 +347,10 @@ def get_file(filename: str):
 
     if file_type == "gif":
         file_type = "image"
+
+    if file_type == "download":
+        return send_file(filename_or_fp=path, 
+                         as_attachment=True)
 
     if file_type == "text":
         with open(file=path) as file:
