@@ -62,11 +62,3 @@ Method | POST
 Body | JSON (application/json)
 Body content | {"url": "$input$"}
 Headers (key: value) | Authorization: your api token
-
-## Notice of Copyright
-
-This repository includes 2 files located in [/imagoweb/static/assets](https://github.com/Jack-Gledhill/imago/tree/master/imagoweb/static/assets) that do not belong to me. Said files are:
-- [login_background.jpg](https://github.com/Jack-Gledhill/imago/tree/master/imagoweb/static/assets/login_background.jpg)
-- [error_background.png](https://github.com/Jack-Gledhill/imago/tree/master/imagoweb/static/assets/error_background.png)
-
-These files are property of [Discord](https://discord.com) and all rights are reserved to them for these files.
