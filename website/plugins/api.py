@@ -34,9 +34,9 @@ BASE = "/api"
 # ~~~~~~~~~~~~~~~~~~~~~~~~
 URL_REGEX = r"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+"
 
-app.config["MAX_IMAGE_FILESIZE"] = config.max_file_size.megabytes * 1024**2 + \
+app.config["MAX_IMAGE_FILESIZE"] = app.config["MAX_CONTENT_LENGTH"] = config.max_file_size.megabytes * 1024**2 + \
                                    config.max_file_size.kilobytes * 1024
-
+                                   
 @app.route(rule=BASE + "/check",
            methods=["POST"])
 def check():
@@ -371,7 +371,8 @@ def get_file(filename: str):
             "ts": "typescript",
             "cpp": "cpp",
             "html": "html",
-            "css": "css"
+            "css": "css",
+            "json": "json"
         }.get(file_ext)
 
         return render_template(template_name_or_list="files/code.html",
