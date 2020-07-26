@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 # =====================
 # Import PATH libraries
 # =====================
@@ -175,7 +173,7 @@ class version(blueprint):
 
     @classmethod
     def from_str(cls,
-                 fmt: str) -> version:
+                 fmt: str):
         """Constructs a version class from a given string.
         
         This string must use the following format:
