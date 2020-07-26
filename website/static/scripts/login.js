@@ -1,3 +1,11 @@
+var time = new Date();
+
+if (time.getHours() >= 18) {
+    $("body").css({backgroundImage: "url(https://teknetcontent.com/img/discord_dark.png)"});
+} else {
+    $("body").css({backgroundImage: "url(https://teknetcontent.com/img/discord_light.jpg)"});
+};
+
 function login() {
     let username = $("#username").val();
     let password = $("#password").val();
@@ -28,13 +36,3 @@ function login() {
         }
     });
 };
-
-$(document).ready(function () {
-    var time = new Date();
-
-    if (time.getHours() >= 18) {
-        $("body").css({backgroundImage: "url(https://teknetcontent.com/img/discord_dark.png)"});
-    } else {
-        $("body").css({backgroundImage: "url(https://teknetcontent.com/img/discord_light.jpg)"});
-    };
-});
