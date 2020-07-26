@@ -18,7 +18,9 @@
         <tbody>
             <tr>
                 <td style="text-align: center; vertical-align: middle;">
-                    <audio src="{{ url_for(endpoint='static', filename='uploads/' + file.key) }}" alt="{{ file.key }}"></audio>
+                    <audio controls alt="{{ file.key }}">
+                        <source src="{{ url_for(endpoint='static', filename='uploads/' + file.key) }}">
+                    </audio>
                 </td>
             </tr>
         </tbody>
