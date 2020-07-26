@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+
+{% block body_content %}
+    <div class="section">
+        <div class="container">
+            <p id="edit-missing" class="banner red margin">
+                You've missed some required fields, please fill them in and try again!
+            </p>
+            <p id="edit-taken" class="banner red margin">
+                Uh oh, looks like the username you provided is already taken!
+            </p>
+            <p id="edit-error" class="banner red margin">
+                Looks like something went wrong when trying to fullfill your request, please try again later.
+            </p>
+
+            <form>
+                <div class="field">
+                    <label class="label has-text-left">Username</label>
+                    <div class="control has-icons-left">
+                        <input id="username" class="input" type="text" onfocus="this.removeAttribute('readonly');" readonly>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-user"></i>
+                        </span>
+                    </div>
+                </div>
+    
+                <div class="field">
+                    <label class="label has-text-left">Password</label>
+                    <div class="control has-icons-left">
+                        <input id="password" class="input" type="password" onfocus="this.removeAttribute('readonly');" readonly>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-key"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button id="save" class="button is-success" onclick="event.preventDefault(); editUser({{ victim.id }});">
+                            <span class="icon is-small">
+                                <i class="fas fa-check"></i>
+                            </span>
+                            <span>Save changes</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for(endpoint='static', filename='scripts/adminEditUser.js') }}"></script>
+{% endblock %}

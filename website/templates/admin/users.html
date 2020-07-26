@@ -1,0 +1,101 @@
+{% extends "admin/base.html" %}
+
+{% block body_content %}
+    <div class="section">
+        <p id="delete-error" class="banner red margin">
+            Looks like something went wrong when trying to fullfill your request, please try again later.
+        </p>
+
+        <p id="delete-success" class="banner green margin">
+            The selected user has been removed from the system!
+        </p>
+
+        <p id="toggle-error" class="banner red margin">
+            Looks like something went wrong when trying to fullfill your request, please try again later.
+        </p>
+
+        <p id="toggle-success" class="banner green margin">
+            The user's Administrator permissions have been toggled!
+        </p>
+
+        <p id="regen-error" class="banner red margin">
+            Looks like something went wrong when trying to fullfill your request, please try again later.
+        </p>
+
+        <p id="regen-success" class="banner green margin">
+            The selected user's token has been reset!
+        </p>
+
+        <table class="table is-fullwidth is-striped">
+            <thead>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Administrator</th>
+                <th>
+                    <a id="regen" class="button is-success" href="/admin/new">
+                        <span class="icon is-small">
+                            <i class="fas fa-plus"></i>
+                        </span>
+                    </a>
+                </th>
+            </thead>
+
+            <tbody>
+                {% for u in users %}
+                    <tr id="{{ u.id }}">
+                        <td>{{ u.id }}</td>
+                        {% if u.id == superuser_id %}
+                            <td>
+                                {{ u.username }} 
+                                <span class="tag is-info is-light">Superuser</span>
+                            </td>
+                        {% else %}
+                            <td>{{ u.username }}</td>
+                        {% endif %}
+                        <td>
+                            {% if u.admin %}
+                                <i class="fas fa-check"></i>
+                            {% else %} 
+                                <i class="fas fa-times"></i>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if u.id not in (user.id, superuser_id) and (not u.admin or superuser)  %}
+                                {% if user.id == superuser_id %}
+                                    <button class="button is-info is-inverted" onclick="toggleAdmin({{ u.id }})">
+                                        <span class="icon is-small">
+                                            <i class="fas fa-user-shield"></i>
+                                        </span>
+                                    </button>
+                                {% endif %}
+                                <button class="button is-success is-inverted" onclick="resetToken({{ u.id }})">
+                                    <span class="icon is-small">
+                                        <i class="fas fa-redo"></i>
+                                    </span>
+                                </button>
+
+                                <a class="button is-warning is-inverted has-background-white" href="/admin/edit/{{ u.id }}">
+                                    <span class="icon is-small">
+                                        <i class="fas fa-pen"></i>
+                                    </span>
+                                </a>
+
+                                <button class="button is-danger is-inverted" onclick="deleteUser({{ u.id }})">
+                                    <span class="icon is-small">
+                                        <i class="fas fa-trash"></i>
+                                    </span>
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for(endpoint='static', filename='scripts/adminResetToken.js') }}"></script>
+    <script src="{{ url_for(endpoint='static', filename='scripts/deleteUser.js') }}"></script>
+    <script src="{{ url_for(endpoint='static', filename='scripts/toggleAdmin.js') }}"></script>
+{% endblock %}

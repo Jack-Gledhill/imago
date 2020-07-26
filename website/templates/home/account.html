@@ -1,0 +1,91 @@
+{% extends "home/base.html" %}
+
+{% block body_content %}
+    <div class="section">
+        <div class="container">
+            <p id="edit-incorrect" class="banner red margin">
+                The confirmation password you provided is incorrect, please double-check it!
+            </p>
+            <p id="edit-missing" class="banner red margin">
+                You've missed some required fields, please fill them in and try again!
+            </p>
+            <p id="edit-taken" class="banner red margin">
+                Uh oh, looks like the username you provided is already taken!
+            </p>
+            <p id="edit-error" class="banner red margin">
+                Looks like something went wrong when trying to fullfill your request, please try again later.
+            </p>
+
+            <p id="edit-success" class="banner green margin">
+                All of your edits have been carefully recorded.
+            </p>
+
+            <form>
+                <div class="field">
+                    <label class="label has-text-left">Username</label>
+                    <div class="control has-icons-left">
+                        <input id="username" class="input" type="text" onfocus="this.removeAttribute('readonly');" readonly>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-user"></i>
+                        </span>
+                    </div>
+                </div>
+    
+                <div class="field">
+                    <label class="label has-text-left">Password</label>
+                    <div class="control has-icons-left">
+                        <input id="password" class="input" type="password" onfocus="this.removeAttribute('readonly');" readonly>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-key"></i>
+                        </span>
+                    </div>
+                </div>
+    
+                <div class="field">
+                    <label class="label has-text-left">Confirm Password</label>
+                    <div class="control has-icons-left">
+                        <input id="confirm" class="input" type="password" onfocus="this.removeAttribute('readonly');" readonly>
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-key"></i>
+                        </span>
+                    </div>
+                </div>
+    
+                {% if not superuser %}
+                    <div class="field">
+                        <div class="control">
+                            <button id="save" class="button is-success" onclick="event.preventDefault(); editUser({{ user.id }});">
+                                <span class="icon is-small">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                                <span>Save changes</span>
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+            </form>
+            <hr>
+
+            <p id="regen-error" class="banner red margin">
+                Looks like something went wrong when trying to fullfill your request, please try again later.
+            </p>
+
+            <p id="regen-success" class="banner green margin">
+                Your API token has been regenerated, make sure to reconfigure ShareX!
+            </p>
+
+            <p class="title is-4 has-text-black">API Access Token</p>
+            <p class="content" id="token">Account token: <a onclick="$('#token').text(`Account token: ${$('#token-proxy').text()}`);">Click to reveal</a></p>
+            {% if not superuser %}
+                <button id="regen" class="button is-info" onclick="resetToken({{ user.id }});">
+                    <span class="icon is-small">
+                        <i class="fas fa-redo"></i>
+                    </span>
+                    <span>Regenerate</span>
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <proxy id="token-proxy" style="display: none;">{{ user.token }}</proxy>
+{% endblock %}

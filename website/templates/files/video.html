@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta property="og:site_name" content="Uploaded by {{ file.owner.username }} at {{ file.created_at_friendly }}">
+    <meta property="og:title" content="{{ file.key }} • {{ size }}">
+    <meta property="og:url" content="{{ url_for(endpoint='static', filename='uploads/' + file.key) }}">
+    <meta property="og:type" content="video">
+    <meta property="og:video" content="{{ url_for(endpoint='static', filename='uploads/' + file.key) }}">
+    <meta property="theme-color" content="{{ config.colour }}">
+</head>
+<body>
+    <style>
+        body {
+            background-color: black;
+        }
+    </style>
+    <table width="100%" height="100%">
+        <tbody>
+            <tr>
+                <td style="text-align: center; vertical-align: middle;">
+                    <video src="{{ url_for(endpoint='static', filename='uploads/' + file.key) }}" alt="{{ file.key }}"></video>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

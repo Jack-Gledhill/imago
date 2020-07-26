@@ -1,0 +1,59 @@
+{% extends "home/base.html" %}
+
+{% block body_content %}
+    <div class="section">
+        <div class="container">
+            <p id="new-missing" class="banner red margin">
+                You've missed some required fields, please fill them in and try again!
+            </p>
+            <p id="new-incorrect" class="banner red margin">
+                The URL you've provided seems to be malformed, please double check it is a valid URL!
+            </p>
+            <p id="new-taken" class="banner red margin">
+                Looks like someone's already shortened the URL you provided!
+            </p>
+            <p id="new-error" class="banner red margin">
+                Looks like something went wrong when trying to fullfill your request, please try again later.
+            </p>
+
+            <form>
+                <div class="field">
+                    <label class="label has-text-left">Link</label>
+                    <div class="control has-icons-left">
+                        <input id="link" class="input" type="text">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-link"></i>
+                        </span>
+                    </div>
+                </div>
+
+                {% if can_custom_name %}
+                    <div class="field">
+                        <label class="label has-text-left">Custom name</label>
+                        <div class="control has-icons-left">
+                            <input id="name" class="input" type="text">
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-id-card"></i>
+                            </span>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="field">
+                    <div class="control">
+                        <button id="shorten" class="button is-success" onclick="event.preventDefault(); newUrl();">
+                            <span class="icon is-small">
+                                <i class="fas fa-plus"></i>
+                            </span>
+                            <span>Shorten URL</span>
+                        </button>
+                    </div>
+                </div>        
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for(endpoint='static', filename='scripts/newUrl.js') }}"></script>
+{% endblock %}

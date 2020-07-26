@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block head_imports %}
+    <meta id="data-proxy" data-user-id="{{ user.id }}">
+    <link rel="stylesheet" href="https://teknetcontent.com/css/banner.min.css">
+{% endblock %}
+
+{% block head_title %}
+    <title>Imago - Admin Panel</title>
+{% endblock %}
+
+{% block base_body_content %}
+    {% include "extends/nav.html" %}
+    
+    {% block body_content %}
+    {% endblock %}
+
+    <div class="footer has-background-white">
+        <div class="content has-text-centered">
+            <a href="https://bulma.io">
+                <img src="https://teknetcontent.com/img/bulma_white.png" width="128" height="24">
+            </a>
+        </div>
+    </div>
+
+    <script src="https://teknetcontent.com/js/get-cookie.min.js"></script>
+{% endblock %}

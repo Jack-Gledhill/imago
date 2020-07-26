@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta property="og:site_name" content="Uploaded by {{ file.owner.username }} at {{ file.created_at_friendly }}">
+    <meta property="og:title" content="{{ file.key }} • {{ size }}">
+    <meta property="og:description" content="{{ content  }}">
+    <meta property="og:url" content="{{ url_for(endpoint='static', filename='uploads/' + file.key) }}">
+    <meta property="og:type" content="website">
+    <meta property="theme-color" content="{{ config.colour }}">
+</head>
+<body style="font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;">
+    {{ content|safe }}
+</body>
+</html>

@@ -1,11 +1,10 @@
 attrdict
 flask
 gevent
-honeybadger
+mistune==2.0.0a4
 pillow
 Psycopg2
+pygments
 pyfiglet
-python-crontab
 PyYAML
-requests
 termcolor

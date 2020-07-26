@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block head_imports %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+    <link rel="stylesheet" href="https://teknetcontent.com/css/banner.min.css">
+{% endblock %}
+
+{% block head_title %}
+    <title>Imago - Login</title>
+{% endblock %}
+
+{% block base_body_content %}
+    <section class="hero is-success is-fullheight">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <div class="column is-4 is-offset-4">
+                    <div class="box">
+                        <form onsubmit="event.preventDefault(); login();">
+                            <p id="incorrect" class="banner red">
+                                You've provided incorrect credentials, please try again!
+                            </p>
+                            <p id="missing" class="banner red">
+                                You've missed some required fields, please fill them in and try again!
+                            </p>
+            
+                            <div class="field">
+                                <label class="label has-text-left">Username</label>
+                                <div class="control has-icons-left">
+                                    <input id="username" class="input" type="text">
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                </div>
+                            </div>
+            
+                            <div class="field">
+                                <label class="label has-text-left">Password</label>
+                                <div class="control has-icons-left">
+                                    <input id="password" class="input" type="password">
+                                    <span class="icon is-small is-left">
+                                        <i class="fas fa-key"></i>
+                                    </span>
+                                </div>
+                            </div>
+            
+                            <div class="field">
+                                <div class="control">
+                                    <input type="submit" class="button is-block is-info is-large is-fullwidth" value="Login">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='scripts/login.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% include "base.html" %}
+
+{% block head_imports %}
+    <link rel="stylesheet" href="https://teknetcontent.com/css/error.css">
+{% endblock %}
+
+{% block head_title %}
+    <title>{{ error["title"] }}</title>
+{% endblock %}
+
+{% block base_body_content %}
+    <div class="content">
+        <h1 class="emoticon">{{ error["emoticon"] }}</h1>
+        <br>
+        <p class="code">{{ error["code"] }}</p>
+        <h1>{{ error["brief"] }}</h1>
+        <h3>{{ error["desc"] }}</h3>
+        <p class="return" onclick="window.history.back();"><a class="arrow">←</a>&nbsp; Go back</p>
+    </div>
+{% endblock %}

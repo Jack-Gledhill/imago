@@ -1,0 +1,51 @@
+{% extends "home/base.html" %}
+
+{% block body_content %}
+    <div class="section">
+        <p id="delete-error" class="banner red margin">
+            Looks like something went wrong when trying to fullfill your request, please try again later.
+        </p>
+
+        <p id="delete-success" class="banner green margin">
+            The selected URL has been removed from the system!
+        </p>
+
+        <table class="table is-fullwidth is-striped">
+            <thead>
+                <th>ID</th>
+                <th>Key</th>
+                <th>Links to</th>
+                <th>Uploaded at</th>
+                <th>
+                    <a id="regen" class="button is-success" href="/home/urls/new">
+                        <span class="icon is-small">
+                            <i class="fas fa-plus"></i>
+                        </span>
+                    </a>
+                </th>
+            </thead>
+
+            <tbody>
+                {% for u in urls %}
+                    <tr id="{{ u.key }}">
+                        <td>{{ u.id }}</td>
+                        <td><a href="/u/{{ u.key }}" target="_blank">{{ u.key }}</a></td>
+                        <td><a href="{{ u.url }}" target="_blank">{{ u.url[:60] + ("..." if len(u.url[:60]) < len(u.url) else "") }}</a></td>
+                        <td>{{ u.created_at_friendly }}</td>
+                        <td>
+                            <button class="button is-danger is-inverted" onclick="deleteUrl('{{ u.key }}')">
+                                <span class="icon is-small">
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for(endpoint='static', filename='scripts/deleteUrl.js') }}"></script>
+{% endblock %}

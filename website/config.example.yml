@@ -1,0 +1,84 @@
+server:
+  host: 0.0.0.0
+  port: 9863
+
+meta:
+  colour: "#e95bb0"
+
+file_optimisation:
+  compress: true
+  quality: 85
+
+  admin_bypass:
+    can_bypass: true
+    by_default: false
+
+url_shortening:
+  custom_url:
+    admin_only: true
+
+allowed_extensions:
+  png: image
+  jpg: image
+  ico: image
+
+  mov: video
+  mp4: video
+  gif: gif
+
+  wav: audio
+  mp3: audio
+
+  txt: text
+
+  py: code
+  js: code
+  go: code
+  rs: code
+  ts: code
+  cpp: code
+
+  md: markdown
+
+# Uses colour styles from https://pygments.org
+code_style: colorful
+
+max_file_size: 
+  megabytes: 2
+  kilobytes: 0
+
+logging:
+  level: verbose
+  project_name: imago
+
+generator:
+  files: 8
+  urls: 3
+  token: 56
+
+figlet: 
+  start: Imago
+  stop: Goodbye
+  font: standard
+  width: 80
+
+version:
+  major: 4
+  minor: 2
+  patch: 0
+  release: stable
+
+superuser:
+  username: superuser
+  password: youshallnotpass
+
+  token: Master youshallnotpass 
+
+postgres:
+  user: user
+  password: youshallnotpass
+
+  port: 5432
+  host: 127.0.0.1
+
+  database: imago

@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+
+{% block body_content %}
+    <div class="section">
+        <p id="upload-error" class="banner red margin">
+            Looks like something went wrong when trying to fullfill your request, please try again later.
+        </p>
+
+        <p id="delete-error" class="banner red margin">
+            Looks like something went wrong when trying to fullfill your request, please try again later.
+        </p>
+
+        <p id="delete-success" class="banner green margin">
+            The selected file has been removed from the system!
+        </p>
+
+        <table class="table is-fullwidth is-striped">
+            <thead>
+                <th>ID</th>
+                <th>Key</th>
+                <th>Author</th>
+                <th>Uploaded at</th>
+                <th></th>
+            </thead>
+
+            <tbody>
+                {% for i in files %}
+                    <tr id="{{ i.key }}">
+                        <th>{{ i.id }}</th>
+                        <td><a href="{{ url_for('static', filename='uploads/' + i.key) }}" target="_blank">{{ i.key }}</a></td>
+                        <td>{{ i.owner.username }}</td>
+                        <td>{{ i.created_at_friendly }}</td>
+                        <td>
+                            {% if i.owner.id not in (user.id, superuser_id) and (not i.owner.is_admin or superuser)  %}
+                                <button class="button is-danger is-inverted" onclick="deleteFile('{{ i.key }}')">
+                                    <span class="icon is-small">
+                                        <i class="fas fa-trash"></i>
+                                    </span>
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}    
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for(endpoint='static', filename='scripts/deleteFile.js') }}"></script>
+{% endblock %}

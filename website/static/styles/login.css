@@ -1,0 +1,17 @@
+::-webkit-scrollbar {
+    display: none !important;
+}
+
+.hero.is-success {
+    background: url("") no-repeat center center fixed;
+    background-color: white;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
