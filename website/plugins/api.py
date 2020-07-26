@@ -369,7 +369,9 @@ def get_file(filename: str):
             "js": "javascript",
             "go": "go",
             "ts": "typescript",
-            "cpp": "cpp"
+            "cpp": "cpp",
+            "html": "html",
+            "css": "css"
         }.get(file_ext)
 
         return render_template(template_name_or_list="files/code.html",

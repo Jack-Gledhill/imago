@@ -37,6 +37,8 @@ allowed_extensions:
   rs: code
   ts: code
   cpp: code
+  html: code
+  css: code
 
   md: markdown
 
