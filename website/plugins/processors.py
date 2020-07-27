@@ -12,7 +12,7 @@ from flask import request, Response
 # -------------------------
 # Local extension libraries
 # -------------------------
-from util.constants import app, config, const
+from util.constants import app, config, version
 
 
 @app.context_processor
@@ -21,6 +21,6 @@ def inject_globals():
     
     Effectively, this means that every page can easily access the user variable."""
 
-    return dict(version=dict(const.version),
+    return dict(version=dict(version),
                 len=len,
                 enumerate=enumerate)
