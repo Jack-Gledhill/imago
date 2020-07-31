@@ -51,7 +51,7 @@ epoch = datetime(year=2000,
 
 version = version(major=4,
                   minor=2,
-                  patch=1,
+                  patch=2,
                   release="stable")
 
 app = None

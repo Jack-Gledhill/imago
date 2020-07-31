@@ -1,9 +1,9 @@
 var time = new Date();
 
 if (time.getHours() >= 18) {
-    $("body").css({backgroundImage: "url(https://teknetcontent.com/img/discord_dark.png)"});
+    $("body").css({background: "url(https://teknetcontent.com/img/discord_dark.png) no-repeat center center fixed"});
 } else {
-    $("body").css({backgroundImage: "url(https://teknetcontent.com/img/discord_light.jpg)"});
+    $("body").css({background: "url(https://teknetcontent.com/img/discord_light.jpg) no-repeat center center fixed"});
 };
 
 function login() {

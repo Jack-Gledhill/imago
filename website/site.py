@@ -35,6 +35,7 @@ import os.path
 from atexit import register
 from os import _exit, listdir, makedirs
 from platform import system
+from sys import argv
 
 # ------------------------
 # Third-party dependencies
@@ -211,9 +212,24 @@ class Imago(blueprint):
         # =============================
         console.info(text=f"Server started at: http://{host}:{port}")
         self.print_fig()
+        console.ready(text=f"Currently running Imago v{constants.version.hash}")
 
 
 if __name__ == "__main__":
+    # =======================================
+    # Print version info on request via flags
+    # =======================================
+    if "-v" in argv or "--version" in argv:
+        print("Version Information")
+        print("===================")
+        print(f"Running Imago v{constants.version.hash}")
+        print(f"Latest major update serial: {constants.version.major}")
+        print(f"Latest minor update serial: {constants.version.minor}")
+        print(f"Latest patch update serial: {constants.version.patch}")
+        print(f"Current release channel: {constants.version.release}")
+        
+        quit()
+
     Imago().boot()
     WSGIServer((config.server.host, config.server.port), app, 
                log=None).serve_forever()
